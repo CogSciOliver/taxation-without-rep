@@ -1,0 +1,37 @@
+[
+  {
+    "pattern": "ADWORDS|GOOGLE ADS|FACEBOOK ADS|META ADS|TIKTOK",
+    "category": "Advertising",
+    "confidence": 0.85
+  },
+  {
+    "pattern": "UBER|LYFT|TAXI",
+    "category": "Travel",
+    "confidence": 0.7
+  },
+  {
+    "pattern": "DELTA|UNITED|AMERICAN AIR|SOUTHWEST|MARRIOTT|HILTON|AIRBNB",
+    "category": "Travel",
+    "confidence": 0.75
+  },
+  {
+    "pattern": "DOORDASH|GRUBHUB|UBER EATS|RESTAURANT|CAFE",
+    "category": "Meals",
+    "confidence": 0.65
+  },
+  {
+    "pattern": "COMCAST|AT&T|VERIZON|T-MOBILE|XFINITY",
+    "category": "Utilities",
+    "confidence": 0.7
+  },
+  {
+    "pattern": "INTUIT|QUICKBOOKS|XERO",
+    "category": "Office",
+    "confidence": 0.7
+  },
+  {
+    "pattern": "BANK FEE|MONTHLY SERVICE FEE|OVERDRAFT",
+    "category": "Bank Fees",
+    "confidence": 0.7
+  }
+]

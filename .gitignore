@@ -1,0 +1,102 @@
+# ------------------------
+# Python
+# ------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Byte-compiled files
+*.pyc
+
+# ------------------------
+# Virtual environments
+# ------------------------
+venv/
+.env/
+.envrc
+.python-version
+
+# ------------------------
+# Environment variables / secrets
+# ------------------------
+.env
+.env.*
+*.env
+
+# ------------------------
+# IDE / Editor
+# ------------------------
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Mac
+.DS_Store
+
+# ------------------------
+# Logs
+# ------------------------
+*.log
+
+# ------------------------
+# Build / distribution
+# ------------------------
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ------------------------
+# Python packaging
+# ------------------------
+*.egg
+pip-wheel-metadata/
+
+# ------------------------
+# Testing
+# ------------------------
+.pytest_cache/
+coverage/
+htmlcov/
+
+# ------------------------
+# Jupyter
+# ------------------------
+.ipynb_checkpoints/
+
+# ------------------------
+# Temporary files
+# ------------------------
+*.tmp
+*.swp
+*.swo
+
+# ------------------------
+# App generated files
+# ------------------------
+
+# Exported reports
+exports/
+*.xlsx
+*.csv
+
+# Uploaded bank files
+uploads/
+
+# Session caches
+cache/
+sessions/
+
+# SQLite (if you add it later)
+*.db
+*.sqlite3
+
+# ------------------------
+# OS
+# ------------------------
+Thumbs.db

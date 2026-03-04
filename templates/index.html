@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>TaxPL Prototype v2</title>
+    <style>
+      body{font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:40px;}
+      .card{padding:16px; border:1px solid #ddd; border-radius:10px; max-width:720px;}
+      label{display:block; margin-top:12px; font-weight:600;}
+      small{color:#555;}
+    </style>
+  </head>
+  <body>
+    <h1>Bank CSV → P&L + Tax Flags (Prototype v2)</h1>
+
+    <div class="card">
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <label>Entity mode</label>
+        <select name="entity_mode">
+          <option value="schedule_c">Sole prop / SMLLC (Schedule C)</option>
+          <option value="partnership_llc">Partnership / MMLLC (Form 1065)</option>
+          <option value="s_corp">S-Corp (Form 1120-S)</option>
+          <option value="exempt_501c3">501(c)(3) exempt org (Form 990 series)</option>
+          <option value="exempt_501d">501(d) religious/apostolic (Form 1065 + K-1)</option>
+        </select>
+        <small>Prototype: this changes checklist + labeling, not legal conclusions.</small>
+
+        <label>Upload bank CSV</label>
+        <input type="file" name="file" accept=".csv" required />
+
+        <div style="margin-top:14px;">
+          <button type="submit">Upload & Analyze</button>
+        </div>
+      </form>
+    </div>
+
+    <h3 style="margin-top:28px;">IRS sources used for the “Updates” panel</h3>
+    <ul>
+      {% for s in sources %}
+        <li><a href="{{ s }}">{{ s }}</a></li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

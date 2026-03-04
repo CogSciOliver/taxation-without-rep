@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>TaxPL Results</title>
+    <style>
+      body{font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin:40px;}
+      table{border-collapse:collapse; width:100%; margin:10px 0 28px 0; font-size:14px;}
+      th,td{border:1px solid #ddd; padding:6px 8px; text-align:left;}
+      th{background:#f6f6f6;}
+      .pill{display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid #ddd; background:#fafafa;}
+      .row{display:flex; gap:18px; align-items:center; flex-wrap:wrap;}
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <h1 style="margin:0;">Results</h1>
+      <span class="pill">File: {{ filename }}</span>
+      <span class="pill">Mode: {{ entity_mode }}</span>
+      <a class="pill" href="/export.xlsx?token={{ token }}">Download Excel export</a>
+      <a class="pill" href="/">Upload another</a>
+    </div>
+
+    <h2>P&L by Category (P&L items only)</h2>
+    {{ pl_cat | safe }}
+
+    <h2>P&L by Month (P&L items only)</h2>
+    {{ pl_month | safe }}
+
+    <h2>Flags</h2>
+    {{ flags | safe }}
+
+    <h2>Non-P&L candidates (first 200)</h2>
+    <p>Prototype guesses: transfers, card payments, owner equity moves, payroll/withholding, financing. Review carefully.</p>
+    {{ non_pl | safe }}
+
+    <h2>Draft tax form checklist</h2>
+    <ul>
+      {% for f in forms %}
+        <li><b>{{ f.form }}</b>: {{ f.why }}</li>
+      {% endfor %}
+    </ul>
+
+    <h2>IRS updates (official sources)</h2>
+    <ul>
+      {% for u in updates %}
+        <li>
+          <a href="{{ u.url }}">{{ u.title }}</a>
+          {% if u.date %} — {{ u.date }}{% endif %}
+          <div style="color:#555;">{{ u.snippet }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

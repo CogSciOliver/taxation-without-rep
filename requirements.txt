@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pandas
+python-multipart
+jinja2
+requests
+beautifulsoup4
+openpyxl
+
+# to install dependencies use 
+#pip install -r requirements.txt 
+
+# run the FastAPI app with auto-reload
+# uvicorn app:app --reload 
+
+#python3 -m venv venv source venv/bin/activate uvicorn app:app --reload 
