@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>P&L (Annual)</h1>
+<div class="pill">File: {{ filename }}</div>
+<div class="pill">Mode: {{ entity_mode }}</div>
+<h2>By Category (total)</h2>
+{{ pl_cat | safe }}
+{% endblock %}

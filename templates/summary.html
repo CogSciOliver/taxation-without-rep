@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Landing Summary</h1>
+
+<div class="card" style="max-width: 860px;">
+  <h3>Key totals</h3>
+  <ul>
+    <li><b>Total income:</b> {{ kpis.total_income }}</li>
+    <li><b>Total expenses:</b> {{ kpis.total_expenses }}</li>
+    <li><b>Net profit:</b> {{ kpis.net_profit }}</li>
+    <li><b>Transactions:</b> {{ kpis.txn_count }}</li>
+    <li><b>Uncategorized:</b> {{ kpis.uncategorized_count }}</li>
+    <li><b>Date range:</b> {{ kpis.date_min }} → {{ kpis.date_max }}</li>
+    <li><b>Months covered:</b> {{ kpis.months_covered }}</li>
+  </ul>
+
+  <h3 style="margin-top:18px;">Go to reports</h3>
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <a href="/pl/monthly?token={{ token }}">View Monthly P&amp;L</a>
+    <a href="/pl/annual?token={{ token }}">View Annual P&amp;L</a>
+    <a href="/flags?token={{ token }}">Review Flags</a>
+    <a href="/non-pl?token={{ token }}">Non-P&L</a>
+    <a href="/categories?token={{ token }}">Review Categories</a>
+    <a href="/results?token={{ token }}">Everything At A Glance</a>
+    <a href="/export.xlsx?token={{ token }}">Export Excel</a>
+  </div>
+
+  {% if kpis.flag_count and kpis.flag_count > 0 %}
+  <h3 style="margin-top:18px;">Flags</h3>
+  <p>You have <b>{{ kpis.flag_count }}</b> items to review.</p>
+  <a href="/flags?token={{ token }}">Review Flags</a>
+  {% endif %}
+
+  {% if kpis.uncategorized_count > 0 %}
+  <h3 style="margin-top:18px;">Uncategorized</h3>
+  {# <p>You have <b>{{ kpis.uncategorized_count }}</b> items to edit.</p>
+  <a href="/uncategorized?token={{ token }}">Review Uncategorized</a> #}
+  {# Save for later to create an editor //uncategorizedEditor #}
+  {% endif %}
+</div>
+
+{% endblock %}
