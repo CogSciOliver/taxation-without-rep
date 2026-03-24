@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Bank CSV → P&L + Tax Flags (Prototype v2)</h1>
+<h1>Bank CSV → P&L + Tax Flags (Prototype v0.2.0)</h1>
 
 <div class="card">
   <form action="/upload" method="post" enctype="multipart/form-data">
@@ -24,10 +24,10 @@
   </form>
 </div>
 
-<h3 style="margin-top:28px;">IRS sources used for the “Updates” panel</h3>
+<h3 style="margin-top:300px;">IRS sources used for the “Updates” panel</h3>
 <ul>
   {% for s in sources %}
-  <li><a href="{{ s }}">{{ s }}</a></li>
+  <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
   {% endfor %}
 </ul>
 

@@ -4,74 +4,13 @@
 <head>
   <meta charset="utf-8" />
   <title>{{ title or "TaxPL" }}</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      margin: 0;
-    }
-
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      width: 240px;
-      padding: 18px;
-      border-right: 1px solid #ddd;
-      background: #fafafa;
-    }
-
-    .sidebar a {
-      display: block;
-      padding: 10px 10px;
-      border-radius: 10px;
-      color: #111;
-      text-decoration: none;
-    }
-
-    .sidebar a.active {
-      background: #111;
-      color: #fff;
-    }
-
-    .content {
-      flex: 1;
-      padding: 28px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin: 10px 0 28px 0;
-      font-size: 14px;
-    }
-
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 6px 8px;
-      text-align: left;
-    }
-
-    th {
-      background: #f6f6f6;
-    }
-
-    .pill {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid #ddd;
-      background: #fff;
-    }
-  </style>
+  <link rel="stylesheet" href="/assets/css/template.css">
 </head>
 
 <body>
   <div class="layout">
     <div class="sidebar">
-      <h3 style="margin-top:0;">TaxPL</h3>
+      <h3 style="margin-top:0; font-family: Georgia, Times, 'Times New Roman', serif;">Taxation No Rep App</h3>
       <a href="/" class="{{ 'active' if nav=='upload' else '' }}">Upload</a>
 
       {% if token %}

@@ -1,4 +1,4 @@
-# TaxPL App v2 (Prototype)
+# TaxPL App v0.2.0 (Prototype)
 
 FastAPI prototype that:
 - uploads a bank CSV

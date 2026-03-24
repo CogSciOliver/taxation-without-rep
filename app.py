@@ -2,6 +2,8 @@ from __future__ import annotations
 from fastapi import FastAPI, UploadFile, File, Request, Form
 from fastapi.responses import HTMLResponse, StreamingResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
 import io
 import uuid
 import pandas as pd
@@ -17,8 +19,10 @@ from pipeline import (
 )
 from tax_updates import fetch_tax_updates, IRS_UPDATES_SOURCES
 
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 # Simple in-memory store for prototype.
 SESSIONS: dict[str, dict] = {}
