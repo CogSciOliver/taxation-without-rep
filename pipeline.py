@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import json
+from random import sample
 import re
 from pathlib import Path
 from typing import Tuple, List, Dict
@@ -124,7 +125,19 @@ def normalize_bank_csv(df: pd.DataFrame) -> pd.DataFrame:
         ["classification", "status"]
     )
 
-    desc_col = primary_desc_col or fallback_desc_col
+    def is_usable_text(col, frame):
+        sample = frame[col].dropna().astype(str).str.strip()
+        sample = sample[sample != ""].head(50)
+        return sample.str.len().mean() > 3 if not sample.empty else False
+
+    desc_col = None
+
+    if primary_desc_col and is_usable_text(primary_desc_col, df):
+        desc_col = primary_desc_col
+    elif fallback_desc_col and is_usable_text(fallback_desc_col, df):
+        desc_col = fallback_desc_col
+    else:
+        desc_col = find_text_fallback(df, exclude=[date_col])
 
     if not desc_col:
         desc_col = find_text_fallback(df, exclude=[date_col])
@@ -147,15 +160,33 @@ def normalize_bank_csv(df: pd.DataFrame) -> pd.DataFrame:
                 pd.to_numeric(working[credit_col], errors="coerce").fillna(0)
                 - pd.to_numeric(working[debit_col], errors="coerce").fillna(0)
             )
-            amt_col = "Amount"
+        elif debit_col:
+            working["Amount"] = -pd.to_numeric(working[debit_col], errors="coerce")
+        elif credit_col:
+            working["Amount"] = pd.to_numeric(working[credit_col], errors="coerce")
         else:
-            raise ValueError("CSV must include Amount or a recognizable Debit/Credit pair.")
+            raise ValueError("CSV must include Amount or Debit/Credit columns.")
+        
+        amt_col = "Amount"
+
+    type_col = find_by_partial(df.columns, ["type"])
+      
+    amount_series = pd.to_numeric(working[amt_col], errors="coerce").copy()
+
+    if type_col:
+        type_text = working[type_col].fillna("").astype(str).str.strip().str.lower()
+
+        expense_mask = type_text.str.contains("expense|debit|withdraw|outflow", regex=True)
+        income_mask = type_text.str.contains("income|credit|deposit|inflow", regex=True)
+
+        amount_series = amount_series.where(~expense_mask, -amount_series.abs())
+        amount_series = amount_series.where(~income_mask, amount_series.abs())
 
     out = pd.DataFrame(
         {
             "date": pd.to_datetime(working[date_col], errors="coerce"),
             "description": working[desc_col].astype(str),
-            "amount": pd.to_numeric(working[amt_col], errors="coerce"),
+            "amount": amount_series,
         }
     )
 
