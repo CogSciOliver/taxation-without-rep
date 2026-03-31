@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Bulk Edit</h2>
+
+<form method="get" action="/bulk-edit">
+  <input type="hidden" name="token" value="{{ token }}">
+  <input name="q" placeholder="Search..." value="{{ filters.q }}">
+  <button type="submit">Filter</button>
+</form>
+
+<form method="post" action="/bulk-edit/apply">
+  <input type="hidden" name="token" value="{{ token }}">
+
+  <select name="action">
+    <option value="set_category">Set Category</option>
+    <option value="mark_pl">Mark as P&L</option>
+    <option value="mark_non_pl">Mark as Non-P&L</option>
+    <option value="undo">Undo Last</option>
+  </select>
+
+  <input name="new_category" placeholder="Category">
+
+  <button type="submit">Apply</button>
+
+  <table>
+    <tr>
+      <th><input type="checkbox" id="select-all"></th>
+      <th>Date</th>
+      <th>Description</th>
+      <th>Amount</th>
+      <th>Category</th>
+      <th>P&L</th>
+    </tr>
+
+    {% for r in rows %}
+    <tr>
+      <td><input type="checkbox" name="selected_ids" value="{{ r._row_id }}"></td>
+      <td>{{ r.date }}</td>
+      <td>{{ r.description }}</td>
+      <td>{{ r.amount }}</td>
+      <td>{{ r.category }}</td>
+      <td>{{ r.is_pl_item }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</form>
+
+<script>
+  const selectAll = document.getElementById("select-all");
+  const rowCheckboxes = () => document.querySelectorAll('input[name="selected_ids"]');
+
+  if (selectAll) {
+    selectAll.addEventListener("change", function () {
+      rowCheckboxes().forEach(cb => {
+        cb.checked = selectAll.checked;
+      });
+    });
+
+    rowCheckboxes().forEach(cb => {
+      cb.addEventListener("change", function () {
+        const boxes = Array.from(rowCheckboxes());
+        const checkedCount = boxes.filter(x => x.checked).length;
+
+        selectAll.checked = boxes.length > 0 && checkedCount === boxes.length;
+        selectAll.indeterminate = checkedCount > 0 && checkedCount < boxes.length;
+      });
+    });
+  }
+</script>
+{% endblock %}

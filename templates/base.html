@@ -19,6 +19,7 @@
       <hr class="sidebar-divider" />
       <a href="/summary?token={{ token }}" class="{{ 'active' if nav=='summary' else '' }}">Summary</a>
       <a href="/results?token={{ token }}" class="{{ 'active' if nav=='results' else '' }}">Results (All)</a>
+      <a href="/bulk-edit?token={{ token }}" class="{% if nav == 'bulk_edit' %}active{% endif %}">Bulk Edit</a>
       <a href="/pl/annual?token={{ token }}" class="{{ 'active' if nav=='annual' else '' }}">P&amp;L (Annual)</a>
       <a href="/pl/monthly?token={{ token }}" class="{{ 'active' if nav=='monthly' else '' }}">P&amp;L (Monthly)</a>
       <a href="/flags?token={{ token }}" class="{{ 'active' if nav=='flags' else '' }}">Flags</a>

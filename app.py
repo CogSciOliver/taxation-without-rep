@@ -148,6 +148,10 @@ def _build_session_payload(
     df = apply_categorization(df)
     df = detect_non_pl_items(df)
 
+    if "_row_id" not in df.columns:
+        df = df.reset_index(drop=True).copy()
+        df["_row_id"] = df.index.astype(str)
+
     pl_by_cat, pl_by_month = build_pl_tables(df)
     flags = build_flags(df)
     forms = build_form_checklist(entity_mode=entity_mode)
@@ -171,7 +175,38 @@ def _build_session_payload(
         "updates": updates,
         "warnings": warnings,
         "selected_year": selected_year,
+        "undo_stack": [],
+        "bulk_edit_filters": {},
     }
+
+def _rebuild_session_outputs(token: str) -> None:
+    s = SESSIONS[token]
+    df = s["df"].copy()
+
+    pl_by_cat, pl_by_month = build_pl_tables(df)
+    flags = build_flags(df)
+
+    s["pl_by_cat"] = pl_by_cat
+    s["pl_by_month"] = pl_by_month
+    s["flags"] = flags
+
+def _push_undo_snapshot(token: str) -> None:
+    s = SESSIONS[token]
+    s.setdefault("undo_stack", [])
+    s["undo_stack"].append(s["df"].copy())
+
+    if len(s["undo_stack"]) > 10:
+        s["undo_stack"] = s["undo_stack"][-10:]
+
+def _undo_last_bulk_edit(token: str) -> bool:
+    s = SESSIONS[token]
+    stack = s.get("undo_stack", [])
+    if not stack:
+        return False
+
+    s["df"] = stack.pop()
+    _rebuild_session_outputs(token)
+    return True
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -587,6 +622,7 @@ def non_pl_page(request: Request, token: str):
 
 @app.get("/categories", response_class=HTMLResponse)
 def categories_page(request: Request, token: str):
+
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
@@ -603,3 +639,115 @@ def categories_page(request: Request, token: str):
             "pl_cat": p["pl_by_cat"].to_html(index=False),
         },
     )
+
+@app.get("/bulk-edit", response_class=HTMLResponse)
+def bulk_edit_page(
+    request: Request,
+    token: str,
+    q: str = "",
+    category: str = "",
+    tx_type: str = "",
+    pl_status: str = "",
+    month: str = "",
+):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired. Re-upload.", status_code=404)
+
+    s = SESSIONS[token]
+
+    if s.get("stage") == "awaiting_year_selection":
+        return RedirectResponse(f"/year-select?token={token}", status_code=303)
+
+    df = s["df"].copy()
+    view = df.copy()
+
+    if q:
+        view = view[view["description"].astype(str).str.contains(q, case=False, na=False)]
+
+    if category:
+        view = view[view["category"] == category]
+
+    if tx_type:
+        view = view[view["amount"].apply(lambda x: "income" if x > 0 else "expense") == tx_type]
+
+    if pl_status == "pl":
+        view = view[view["is_pl_item"] == True]
+    elif pl_status == "nonpl":
+        view = view[view["is_pl_item"] == False]
+
+    if month:
+        view = view[view["month"] == month]
+
+    categories = sorted(df["category"].dropna().astype(str).unique().tolist())
+    months = sorted(df["month"].dropna().astype(str).unique().tolist())
+
+    return templates.TemplateResponse(
+        "bulk_edit.html",
+        {
+            "request": request,
+            "token": token,
+            "nav": "bulk_edit",
+            "rows": view.to_dict(orient="records"),
+            "categories": categories,
+            "months": months,
+            "filters": {
+                "q": q,
+                "category": category,
+                "tx_type": tx_type,
+                "pl_status": pl_status,
+                "month": month,
+            },
+        },
+    )
+
+@app.post("/bulk-edit/apply")
+async def bulk_edit_apply(
+    token: str = Form(...),
+    action: str = Form(...),
+    selected_ids: list[str] = Form([]),
+    new_category: str = Form(""),
+):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired.", status_code=404)
+
+    s = SESSIONS[token]
+
+    if action == "undo":
+        _undo_last_bulk_edit(token)
+        return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
+
+    if not selected_ids:
+        return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
+
+    df = s["df"].copy()
+    _push_undo_snapshot(token)
+
+    mask = df["_row_id"].astype(str).isin(selected_ids)
+
+    if action == "set_category" and new_category:
+        df.loc[mask, "category"] = new_category
+        df.loc[mask, "cat_confidence"] = 1.0
+        df.loc[mask, "cat_source"] = "bulk_edit"
+
+    elif action == "mark_pl":
+        df.loc[mask, "is_pl_item"] = True
+        df.loc[mask, "non_pl_reason"] = ""
+
+    elif action == "mark_non_pl":
+        df.loc[mask, "is_pl_item"] = False
+        df.loc[mask, "non_pl_reason"] = "User marked non-P&L"
+
+    s["df"] = df
+    _rebuild_session_outputs(token)
+
+    return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
+
+
+
+
+
+
+
+
+
+

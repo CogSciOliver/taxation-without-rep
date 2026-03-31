@@ -1,7 +1,7 @@
 body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     margin: 0;
-    color: #f3f4f6;
+    color: rgb(225, 245, 220);
     background: #111c14;
     line-height: 1.5;
 }
@@ -12,7 +12,7 @@ body {
 }
 
 a {
-    color: #cffff0;
+    color: #00fdad;
 }
 
 .content {
@@ -92,6 +92,7 @@ button:hover {
 .alert-error {
     border: 1px solid #b00020;
     color: #b00020;
+    background-color: #debbbb;
 }
 
 .upload-form {
