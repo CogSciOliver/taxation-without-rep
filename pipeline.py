@@ -1,4 +1,4 @@
-# v1.0.0 03.24.2026 08:31, author Danii Oliver
+# v2.0.0 03.31.2026 08:31, author Danii Oliver
 
 from __future__ import annotations
 import json

@@ -1,4 +1,4 @@
-# v1.0.0 03.24.2026 08:31, author Danii Oliver 
+# v2.1.0 in progress 03.31.2026 10:31, author Danii Oliver 
 
 from __future__ import annotations
 
@@ -179,6 +179,7 @@ def _build_session_payload(
         "bulk_edit_filters": {},
     }
 
+
 def _rebuild_session_outputs(token: str) -> None:
     s = SESSIONS[token]
     df = s["df"].copy()
@@ -190,6 +191,7 @@ def _rebuild_session_outputs(token: str) -> None:
     s["pl_by_month"] = pl_by_month
     s["flags"] = flags
 
+
 def _push_undo_snapshot(token: str) -> None:
     s = SESSIONS[token]
     s.setdefault("undo_stack", [])
@@ -197,6 +199,7 @@ def _push_undo_snapshot(token: str) -> None:
 
     if len(s["undo_stack"]) > 10:
         s["undo_stack"] = s["undo_stack"][-10:]
+
 
 def _undo_last_bulk_edit(token: str) -> bool:
     s = SESSIONS[token]
@@ -250,7 +253,6 @@ async def upload(
 
     token = str(uuid.uuid4())
 
-    # If multiple years exist, pause and let the user choose before processing.
     if len(years) > 1:
         SESSIONS[token] = {
             "stage": "awaiting_year_selection",
@@ -263,10 +265,13 @@ async def upload(
         }
         return RedirectResponse(url=f"/year-select?token={token}", status_code=303)
 
-    # Single-year file or no detectable years: process immediately.
     try:
         selected_year = years[0] if len(years) == 1 else None
-        working_df = prepped_df if selected_year is None else _filter_df_to_year(prepped_df, selected_year, detected_date_col)
+        working_df = (
+            prepped_df
+            if selected_year is None
+            else _filter_df_to_year(prepped_df, selected_year, detected_date_col)
+        )
 
         payload = _build_session_payload(
             df=working_df,
@@ -416,15 +421,13 @@ def summary(request: Request, token: str):
 
     uncategorized_count = 0
     if "category" in df.columns:
-        uncategorized_count = int(
-            df["category"].isna().sum() +
-            (df["category"] == "").sum()
-        )
+        uncategorized_count = int(df["category"].isna().sum() + (df["category"] == "").sum())
 
     date_col = next(
         (c for c in df.columns if c.lower() in ["date", "transaction_date", "posted_date", "txn_date"]),
         None,
     )
+
     date_min = None
     date_max = None
     if date_col:
@@ -439,8 +442,9 @@ def summary(request: Request, token: str):
     if date_col and pd.api.types.is_datetime64_any_dtype(df[date_col]):
         months_covered = int(df[date_col].dt.to_period("M").nunique())
 
-    total_income = float(df.loc[df["type"] == "income", "amount"].sum()) if "type" in df.columns else 0.0
-    total_expenses = float(df.loc[df["type"] == "expense", "amount"].sum()) if "type" in df.columns else 0.0
+    pl_df = df[df["is_pl_item"] == True].copy()
+    total_income = float(pl_df.loc[pl_df["amount"] > 0, "amount"].sum())
+    total_expenses = float(pl_df.loc[pl_df["amount"] < 0, "amount"].abs().sum())
     net_profit = total_income - total_expenses
 
     kpis = {
@@ -542,9 +546,11 @@ def export_xlsx(token: str):
 def pl_annual(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
+
     r = SESSIONS[token]
     if r.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
+
     return templates.TemplateResponse(
         "pl_annual.html",
         {
@@ -563,9 +569,11 @@ def pl_annual(request: Request, token: str):
 def pl_monthly(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
+
     r = SESSIONS[token]
     if r.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
+
     return templates.TemplateResponse(
         "pl_monthly.html",
         {
@@ -584,9 +592,11 @@ def pl_monthly(request: Request, token: str):
 def flags_page(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
+
     p = SESSIONS[token]
     if p.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
+
     return templates.TemplateResponse(
         "flags.html",
         {
@@ -622,7 +632,6 @@ def non_pl_page(request: Request, token: str):
 
 @app.get("/categories", response_class=HTMLResponse)
 def categories_page(request: Request, token: str):
-
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
@@ -640,6 +649,7 @@ def categories_page(request: Request, token: str):
         },
     )
 
+
 @app.get("/bulk-edit", response_class=HTMLResponse)
 def bulk_edit_page(
     request: Request,
@@ -654,7 +664,6 @@ def bulk_edit_page(
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
     s = SESSIONS[token]
-
     if s.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
@@ -681,6 +690,33 @@ def bulk_edit_page(
     categories = sorted(df["category"].dropna().astype(str).unique().tolist())
     months = sorted(df["month"].dropna().astype(str).unique().tolist())
 
+    sort = request.query_params.get("sort", "date").strip()
+    direction = request.query_params.get("dir", "desc").strip().lower()
+
+    view = view.copy()
+    view["type"] = view["amount"].apply(lambda x: "income" if x > 0 else "expense")
+
+    sort_map = {
+        "date": "date",
+        "description": "description",
+        "amount": "amount",
+        "category": "category",
+        "type": "type",
+        "month": "month",
+    }
+
+    sort_col = sort_map.get(sort, "date")
+    ascending = direction == "asc"
+
+    if sort_col in ["description", "category", "type", "month"]:
+        view = (
+            view.assign(_sort_key=view[sort_col].fillna("").astype(str).str.lower())
+            .sort_values(by="_sort_key", ascending=ascending, na_position="last")
+            .drop(columns=["_sort_key"])
+        )
+    else:
+        view = view.sort_values(by=sort_col, ascending=ascending, na_position="last").copy()
+
     return templates.TemplateResponse(
         "bulk_edit.html",
         {
@@ -696,9 +732,12 @@ def bulk_edit_page(
                 "tx_type": tx_type,
                 "pl_status": pl_status,
                 "month": month,
+                "sort": sort,
+                "dir": direction,
             },
         },
     )
+
 
 @app.post("/bulk-edit/apply")
 async def bulk_edit_apply(
@@ -741,9 +780,6 @@ async def bulk_edit_apply(
     _rebuild_session_outputs(token)
 
     return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
-
-
-
 
 
 

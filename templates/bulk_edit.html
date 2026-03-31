@@ -5,7 +5,18 @@
 
 <form method="get" action="/bulk-edit">
   <input type="hidden" name="token" value="{{ token }}">
+
   <input name="q" placeholder="Search..." value="{{ filters.q }}">
+
+  <select name="category">
+    <option value="">All Categories</option>
+    {% for c in categories %}
+    <option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>
+      {{ c }}
+    </option>
+    {% endfor %}
+  </select>
+
   <button type="submit">Filter</button>
 </form>
 
@@ -14,23 +25,57 @@
 
   <select name="action">
     <option value="set_category">Set Category</option>
-    <option value="mark_pl">Mark as P&L</option>
-    <option value="mark_non_pl">Mark as Non-P&L</option>
+    <option value="mark_pl">Mark as P&amp;L</option>
+    <option value="mark_non_pl">Mark as Non-P&amp;L</option>
     <option value="undo">Undo Last</option>
   </select>
 
   <input name="new_category" placeholder="Category">
 
   <button type="submit">Apply</button>
+  <span id="selected-count">0 selected</span>
 
   <table>
     <tr>
       <th><input type="checkbox" id="select-all"></th>
-      <th>Date</th>
-      <th>Description</th>
-      <th>Amount</th>
-      <th>Category</th>
-      <th>P&L</th>
+
+      <th>
+        <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=date&dir={% if filters.sort == 'date' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
+          Date
+          {% if filters.sort == 'date' %}
+            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=description&dir={% if filters.sort == 'description' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
+          Description
+          {% if filters.sort == 'description' %}
+            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=amount&dir={% if filters.sort == 'amount' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
+          Amount
+          {% if filters.sort == 'amount' %}
+            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% endif %}
+        </a>
+      </th>
+
+      <th>
+        <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=category&dir={% if filters.sort == 'category' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
+          Category
+          {% if filters.sort == 'category' %}
+            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% endif %}
+        </a>
+      </th>
+
+      <th>P&amp;L</th>
     </tr>
 
     {% for r in rows %}
@@ -50,11 +95,17 @@
   const selectAll = document.getElementById("select-all");
   const rowCheckboxes = () => document.querySelectorAll('input[name="selected_ids"]');
 
+  function updateCount() {
+    const count = Array.from(rowCheckboxes()).filter(x => x.checked).length;
+    document.getElementById("selected-count").innerText = `${count} selected`;
+  }
+
   if (selectAll) {
     selectAll.addEventListener("change", function () {
       rowCheckboxes().forEach(cb => {
         cb.checked = selectAll.checked;
       });
+      updateCount();
     });
 
     rowCheckboxes().forEach(cb => {
@@ -64,8 +115,11 @@
 
         selectAll.checked = boxes.length > 0 && checkedCount === boxes.length;
         selectAll.indeterminate = checkedCount > 0 && checkedCount < boxes.length;
+
+        updateCount();
       });
     });
   }
 </script>
+
 {% endblock %}

@@ -1,5 +1,22 @@
 # Release Notes
-## v1.0.0 — Full Account Upload with Year selection 
+pending patch — Full Account Upload with Year selection 
+## v2.0.0 - Bulk Upload
+{# v2.2.1
+save merchant rule
+I’d go “Save as Rule” system design next, not UI.
+That’s where this becomes dangerously powerful.
+
+3.31.26 ->  v2.2.0
+when changes are made where is it all getting stored to for later continued work? #}
+
+v2.1.0
+Users click: Date, Description, amount, Category click again to reverse: asc / desc
+
+
+
+
+
+## v1.0.0 — Full Account or Partial Upload and proper sorting
 
 
 ## v0.2.0 — Sidebar + Summary Dashboard + Annual P&L
