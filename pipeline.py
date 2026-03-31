@@ -1,3 +1,5 @@
+# v1.0.0 03.24.2026 08:31, author Danii Oliver
+
 from __future__ import annotations
 import json
 import re
@@ -23,6 +25,7 @@ OWNER_HINTS = ["OWNER DRAW", "OWNER'S DRAW", "OWNER CONTRIBUTION", "CAPITAL CONT
 LOAN_HINTS = ["LOAN", "LENDING", "PAYMENT TO", "PRINCIPAL", "LINE OF CREDIT"]
 PAYROLL_HINTS = ["PAYROLL", "GUSTO", "ADP", "PAYCHEX", "WITHHOLDING", "941", "940"]
 
+
 def _load_json(path: Path, default):
     try:
         if path.exists():
@@ -31,39 +34,128 @@ def _load_json(path: Path, default):
         pass
     return default
 
+
 def normalize_bank_csv(df: pd.DataFrame) -> pd.DataFrame:
-    cols = {c.lower().strip(): c for c in df.columns}
+    def canon(name: str) -> str:
+        return re.sub(r"[^a-z0-9]+", "", str(name).strip().lower())
 
-    def pick(*names):
-        for n in names:
-            if n in cols:
-                return cols[n]
-        return None
+    def find_by_partial(columns, terms):
+        ranked = []
+        for col in columns:
+            c = canon(col)
+            score = 0
+            for term in terms:
+                if term == c:
+                    score += 100
+                elif term in c:
+                    score += 10
+            if score > 0:
+                ranked.append((score, col))
+        ranked.sort(reverse=True, key=lambda x: x[0])
+        return ranked[0][1] if ranked else None
 
-    date_col = pick("date", "transaction date", "posted date")
-    desc_col = pick("description", "merchant", "name", "memo")
-    amt_col = pick("amount", "amt", "transaction amount")
-    debit_col = pick("debit")
-    credit_col = pick("credit")
+    def find_date_by_values(frame: pd.DataFrame, threshold: float = 0.60):
+        best_col = None
+        best_score = 0.0
 
-    if date_col is None or desc_col is None:
-        raise ValueError("CSV must include Date and Description/Merchant columns.")
+        for col in frame.columns:
+            sample = frame[col].dropna().astype(str).str.strip()
+            sample = sample[sample != ""].head(100)
+
+            if sample.empty:
+                continue
+
+            parsed = pd.to_datetime(sample, errors="coerce")
+            score = float(parsed.notna().mean())
+
+            if score > best_score:
+                best_score = score
+                best_col = col
+
+        return best_col if best_score >= threshold else None
+
+    def find_text_fallback(frame: pd.DataFrame, exclude=None):
+        exclude = set(exclude or [])
+        best_col = None
+        best_score = -1
+
+        for col in frame.columns:
+            if col in exclude:
+                continue
+
+            sample = frame[col].dropna().astype(str).str.strip()
+            sample = sample[sample != ""].head(100)
+
+            if sample.empty:
+                continue
+
+            c = canon(col)
+
+            if any(term in c for term in ["amount", "debit", "credit", "balance", "account", "number"]):
+                continue
+
+            avg_len = sample.str.len().mean()
+            uniqueness = sample.nunique(dropna=True)
+
+            score = 0
+            if avg_len >= 4:
+                score += 1
+            if avg_len >= 8:
+                score += 1
+            score += min(int(uniqueness), 5)
+
+            if score > best_score:
+                best_score = score
+                best_col = col
+
+        return best_col
+
+    date_col = find_by_partial(df.columns, ["date", "post", "posted", "transaction"])
+    if not date_col:
+        date_col = find_date_by_values(df)
+
+    primary_desc_col = find_by_partial(
+        df.columns,
+        ["description", "merchant", "memo", "payee", "name", "detail"]
+    )
+
+    fallback_desc_col = find_by_partial(
+        df.columns,
+        ["classification", "status"]
+    )
+
+    desc_col = primary_desc_col or fallback_desc_col
+
+    if not desc_col:
+        desc_col = find_text_fallback(df, exclude=[date_col])
+
+    amt_col = find_by_partial(df.columns, ["amount", "amt", "value"])
+    debit_col = find_by_partial(df.columns, ["debit", "withdraw", "outflow", "payment"])
+    credit_col = find_by_partial(df.columns, ["credit", "deposit", "inflow"])
+
+    if date_col is None:
+        raise ValueError("CSV must include a recognizable date column or a column with parseable dates.")
+
+    if desc_col is None:
+        raise ValueError("CSV must include a recognizable description column or text column to use as transaction detail.")
+
+    working = df.copy()
 
     if amt_col is None:
         if debit_col and credit_col:
-            df["Amount"] = (
-                pd.to_numeric(df[credit_col], errors="coerce").fillna(0)
-                - pd.to_numeric(df[debit_col], errors="coerce").fillna(0)
+            working["Amount"] = (
+                pd.to_numeric(working[credit_col], errors="coerce").fillna(0)
+                - pd.to_numeric(working[debit_col], errors="coerce").fillna(0)
             )
             amt_col = "Amount"
         else:
-            raise ValueError("CSV must include Amount or Debit/Credit columns.")
+            raise ValueError("CSV must include Amount or a recognizable Debit/Credit pair.")
 
     out = pd.DataFrame(
         {
-            "date": pd.to_datetime(df[date_col], errors="coerce"),
-            "description": df[desc_col].astype(str),
-            "amount": pd.to_numeric(df[amt_col], errors="coerce"),
+            "date": pd.to_datetime(working[date_col], errors="coerce"),
+            "description": working[desc_col].astype(str),
+            "amount": pd.to_numeric(working[amt_col], errors="coerce"),
         }
     )
 
@@ -82,28 +174,42 @@ def normalize_bank_csv(df: pd.DataFrame) -> pd.DataFrame:
 
     return out
 
+
 def apply_categorization(df: pd.DataFrame) -> pd.DataFrame:
     vendor_map: dict = _load_json(VENDOR_MAP_PATH, {})
     rules: list = _load_json(RULES_PATH, [])
 
-    def categorize(desc_norm: str):
+    def categorize(desc_norm):
+        desc_text = "" if pd.isna(desc_norm) else str(desc_norm)
+
         for k, v in vendor_map.items():
-            if k.upper() in desc_norm:
+            key_text = "" if pd.isna(k) else str(k)
+            if key_text and key_text.upper() in desc_text:
                 return v, 0.95, "vendor_map"
 
         for r in rules:
             pat = r.get("pattern")
             cat = r.get("category", DEFAULT_CATEGORY)
-            if pat and re.search(pat, desc_norm):
-                return cat, float(r.get("confidence", 0.75)), "rule"
+
+            pat_text = "" if pd.isna(pat) else str(pat)
+            if pat_text:
+                try:
+                    if re.search(pat_text, desc_text):
+                        return cat, float(r.get("confidence", 0.75)), "rule"
+                except re.error:
+                    continue
 
         return DEFAULT_CATEGORY, 0.10, "default"
+
+    df = df.copy()
+    df["description_norm"] = df["description_norm"].fillna("").astype(str)
 
     cats = df["description_norm"].apply(categorize)
     df["category"] = cats.apply(lambda x: x[0])
     df["cat_confidence"] = cats.apply(lambda x: x[1])
     df["cat_source"] = cats.apply(lambda x: x[2])
     return df
+
 
 def detect_non_pl_items(df: pd.DataFrame) -> pd.DataFrame:
     def mark(mask, reason):
@@ -120,9 +226,10 @@ def detect_non_pl_items(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def build_pl_tables(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     pl = df[df["is_pl_item"] == True].copy()
-    pl["type"] = pl["amount"].apply(lambda x: "Income" if x > 0 else "Expense")
+    pl["type"] = pl["amount"].apply(lambda x: "income" if x > 0 else "expense")
     pl["abs_amount"] = pl["amount"].abs()
 
     by_cat = (
@@ -140,6 +247,7 @@ def build_pl_tables(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     )
 
     return by_cat, by_month
+
 
 def build_flags(df: pd.DataFrame) -> pd.DataFrame:
     flags = []
@@ -187,6 +295,7 @@ def build_flags(df: pd.DataFrame) -> pd.DataFrame:
 
     return pd.DataFrame(flags).head(500)
 
+
 def build_form_checklist(entity_mode: str) -> List[Dict[str, str]]:
     common = [
         {"form": "Bring-to-preparer package", "why": "Attach categorized export + substantiation notes for flagged items."},
@@ -232,6 +341,7 @@ def build_form_checklist(entity_mode: str) -> List[Dict[str, str]]:
         ]
     return common
 
+
 def export_workbook(
     df: pd.DataFrame,
     pl_by_cat: pd.DataFrame,
@@ -259,19 +369,19 @@ def export_workbook(
     add_df("PL_by_Month", pl_by_month)
     add_df("Flags", flags)
 
-    tx_cols = ["date","month","description","amount","category","cat_confidence","cat_source","is_pl_item","non_pl_reason"]
+    tx_cols = ["date", "month", "description", "amount", "category", "cat_confidence", "cat_source", "is_pl_item", "non_pl_reason"]
     add_df("Transactions", df[tx_cols].copy())
     add_df("Non_PL", df[df["is_pl_item"] == False][tx_cols].copy())
 
     ws_forms = wb.create_sheet("Form_Checklist")
-    ws_forms.append(["form","why"])
+    ws_forms.append(["form", "why"])
     for f in forms:
-        ws_forms.append([f.get("form",""), f.get("why","")])
+        ws_forms.append([f.get("form", ""), f.get("why", "")])
 
     ws_updates = wb.create_sheet("IRS_Updates")
-    ws_updates.append(["title","date","url","snippet"])
+    ws_updates.append(["title", "date", "url", "snippet"])
     for u in updates:
-        ws_updates.append([u.get("title",""), u.get("date",""), u.get("url",""), u.get("snippet","")])
+        ws_updates.append([u.get("title", ""), u.get("date", ""), u.get("url", ""), u.get("snippet", "")])
 
     bio = io.BytesIO()
     wb.save(bio)

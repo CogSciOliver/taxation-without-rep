@@ -1,33 +1,35 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ title or "TaxPL" }}</title>
-  <link rel="stylesheet" href="/assets/css/template.css">
+  <link rel="stylesheet" href="/assets/css/template.css" />
 </head>
 
 <body>
   <div class="layout">
-    <div class="sidebar">
-      <h3 style="margin-top:0; font-family: Georgia, Times, 'Times New Roman', serif;">Taxation No Rep App</h3>
+    <aside class="sidebar">
+      <h3 class="site-title">Taxation No Rep App</h3>
+
       <a href="/" class="{{ 'active' if nav=='upload' else '' }}">Upload</a>
 
       {% if token %}
-      <hr>
+      <hr class="sidebar-divider" />
       <a href="/summary?token={{ token }}" class="{{ 'active' if nav=='summary' else '' }}">Summary</a>
       <a href="/results?token={{ token }}" class="{{ 'active' if nav=='results' else '' }}">Results (All)</a>
-      <a href="/pl/annual?token={{token}}" class="{{ 'active' if nav=='annual' else '' }}">P&L (Annual)</a>
-      <a href="/pl/monthly?token={{token}}" class="{{ 'active' if nav=='monthly' else '' }}">P&L (Monthly)</a>
-      <a href="/flags?token={{token}}" class="{{ 'active' if nav=='flags' else '' }}">Flags</a>
-      <a href="/non-pl?token={{token}}" class="{{ 'active' if nav=='nonpl' else '' }}">Non-P&L</a>
-      <a href="/export.xlsx?token={{token}}">Export Excel</a>
+      <a href="/pl/annual?token={{ token }}" class="{{ 'active' if nav=='annual' else '' }}">P&amp;L (Annual)</a>
+      <a href="/pl/monthly?token={{ token }}" class="{{ 'active' if nav=='monthly' else '' }}">P&amp;L (Monthly)</a>
+      <a href="/flags?token={{ token }}" class="{{ 'active' if nav=='flags' else '' }}">Flags</a>
+      <a href="/non-pl?token={{ token }}" class="{{ 'active' if nav=='nonpl' else '' }}">Non-P&amp;L</a>
+      <a href="/export.xlsx?token={{ token }}">Export Excel</a>
       {% endif %}
-    </div>
+    </aside>
 
-    <div class="content">
+    <main class="content">
       {% block content %}{% endblock %}
-    </div>
+    </main>
   </div>
 </body>
 

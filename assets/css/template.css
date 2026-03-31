@@ -11,34 +11,8 @@ body {
     min-height: 100vh;
 }
 
-.sidebar {
-    width: 240px;
-    padding: 18px;
-    border-right: 1px solid #3a3a3a;
-    background: #101010;
-}
-
-.sidebar a {
-    display: block;
-    padding: 10px;
-    border-radius: 10px;
-    color: #f3f4f6;
-    text-decoration: none;
-    margin-bottom: 4px;
-}
-
-.sidebar a:hover {
-    background: #1d1d1d;
-}
-
-.sidebar a.active {
-    background: #2a2a2a;
-    color: #fff;
-    font-weight: 600;
-}
-
 a {
-    color: #cfe8ff;
+    color: #cffff0;
 }
 
 .content {
@@ -68,6 +42,16 @@ th {
     background: #1f1f1f;
 }
 
+
+/* General UI */
+
+.card {
+    background: #161616;
+    border: 1px solid #2f2f2f;
+    border-radius: 14px;
+    padding: 20px;
+}
+
 .pill {
     display: inline-block;
     padding: 4px 10px;
@@ -75,4 +59,195 @@ th {
     border: 1px solid #555;
     background: #333;
     color: #f5f5f5;
+}
+
+button {
+    background: #2a2a2a;
+    color: #fff;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #343434;
+}
+
+/* Upload Index Display */
+.page-header {
+    margin-bottom: 20px;
+}
+
+.upload-card {
+    margin-bottom: 32px;
+}
+
+.alert {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.alert-error {
+    border: 1px solid #b00020;
+    color: #b00020;
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-help {
+    display: block;
+}
+
+.form-actions {
+    margin-top: 14px;
+}
+
+/* IRS Tools */
+.sources-section {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid #3a3a3a;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.sources-section h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.sources-list {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.sources-list li {
+    margin-bottom: 6px;
+}
+
+/*  */
+
+
+/* Summary Display */
+.summary-card {
+    max-width: 860px;
+}
+
+.summary-year {
+    margin-bottom: 14px;
+}
+
+.alert-note {
+    border: 1px solid #ccc;
+}
+
+.summary-kpis {
+    padding-left: 20px;
+}
+
+.section-heading {
+    margin-top: 18px;
+}
+
+.summary-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.summary-links a {
+    display: inline-block;
+    padding: 10px 12px;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    background: #111;
+    text-decoration: none;
+}
+
+.summary-links a:hover {
+    background: #1b1b1b;
+}
+
+/* Year Select Display */
+.year-select-page {
+    max-width: 760px;
+}
+
+.year-select-form {
+    margin-top: 16px;
+}
+
+.year-select-input {
+    display: block;
+    margin: 10px 0 20px;
+    padding: 10px;
+    min-width: 220px;
+}
+
+.back-link-row {
+    margin-top: 24px;
+}
+
+select,
+input[type="file"],
+button {
+    font: inherit;
+}
+
+select,
+input[type="file"] {
+    background: #111;
+    color: #f3f4f6;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+/* Sidebar Display */
+.site-title {
+    margin-top: 0;
+    font-family: Georgia, Times, "Times New Roman", serif;
+}
+
+.sidebar-divider {
+    margin: 14px 0;
+}
+
+.sidebar {
+    width: 240px;
+    padding: 18px;
+    border-right: 1px solid #3a3a3a;
+    background: #101010;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px;
+    border-radius: 10px;
+    color: #f3f4f6;
+    text-decoration: none;
+    margin-bottom: 4px;
+}
+
+.sidebar a:hover {
+    background: #1d1d1d;
+}
+
+.sidebar a.active {
+    background: #2a2a2a;
+    color: #fff;
+    font-weight: 600;
 }

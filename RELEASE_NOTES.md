@@ -1,4 +1,6 @@
 # Release Notes
+## v1.0.0 — Full Account Upload with Year selection 
+
 
 ## v0.2.0 — Sidebar + Summary Dashboard + Annual P&L
 

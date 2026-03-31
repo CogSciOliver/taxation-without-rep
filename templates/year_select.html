@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="year-select-page">
+    <h1>Select tax year v1.0.0</h1>
+
+    <p><strong>File:</strong> {{ filename }}</p>
+
+    <p>
+        This account history appears to include multiple years.
+        Choose the year you want to work with, or continue with all years.
+    </p>
+
+    {% if upload_notes %}
+    <div class="alert alert-note">
+        <strong>Detected during upload:</strong>
+        <ul>
+            {% for note in upload_notes %}
+            <li>{{ note }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="alert alert-error">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post" action="/year-select" class="year-select-form">
+        <input type="hidden" name="token" value="{{ token }}" />
+
+        <div class="form-row">
+            <label for="year"><strong>Year</strong></label>
+            <select id="year" name="year" class="year-select-input">
+                {% for y in years %}
+                <option value="{{ y }}">{{ y }}</option>
+                {% endfor %}
+                <option value="all">All years</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">Continue</button>
+        </div>
+    </form>
+
+    <p class="back-link-row">
+        <a href="/">Upload a different file</a>
+    </p>
+</section>
+
+{% endblock %}

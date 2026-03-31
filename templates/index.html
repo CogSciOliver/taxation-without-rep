@@ -1,34 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Bank CSV → P&L + Tax Flags (Prototype v0.2.0)</h1>
+<section class="page-header">
+  <h1>Bank CSV → P&amp;L + Tax Flags (Prototype v1.0.0)</h1>
+</section>
 
-<div class="card">
-  <form action="/upload" method="post" enctype="multipart/form-data">
-    <label>Entity mode</label>
-    <select name="entity_mode">
-      <option value="schedule_c">Sole prop / SMLLC (Schedule C)</option>
-      <option value="partnership_llc">Partnership / MMLLC (Form 1065)</option>
-      <option value="s_corp">S-Corp (Form 1120-S)</option>
-      <option value="exempt_501c3">501(c)(3) exempt org (Form 990 series)</option>
-      <option value="exempt_501d">501(d) religious/apostolic (Form 1065 + K-1)</option>
-    </select>
-    <small>Prototype: this changes checklist + labeling, not legal conclusions.</small>
+<section class="card upload-card">
+  {% if error %}
+  <div class="alert alert-error">
+    {{ error }}
+  </div>
+  {% endif %}
 
-    <label>Upload bank CSV</label>
-    <input type="file" name="file" accept=".csv" required />
+  <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+    <div class="form-row">
+      <label for="entity_mode">Entity mode</label>
+      <select id="entity_mode" name="entity_mode">
+        <option value="schedule_c">Sole prop / SMLLC (Schedule C)</option>
+        <option value="partnership_llc">Partnership / MMLLC (Form 1065)</option>
+        <option value="s_corp">S-Corp (Form 1120-S)</option>
+        <option value="exempt_501c3">501(c)(3) exempt org (Form 990 series)</option>
+        <option value="exempt_501d">501(d) religious/apostolic (Form 1065 + K-1)</option>
+      </select>
+      <small class="field-help">
+        Prototype: this changes checklist + labeling, not legal conclusions.
+      </small>
+    </div>
 
-    <div style="margin-top:14px;">
-      <button type="submit">Upload & Analyze</button>
+    <div class="form-row">
+      <label for="file">Upload bank CSV</label>
+      <input id="file" type="file" name="file" accept=".csv" required />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">Upload &amp; Analyze</button>
     </div>
   </form>
-</div>
+</section>
 
-<h3 style="margin-top:300px;">IRS sources used for the “Updates” panel</h3>
-<ul>
-  {% for s in sources %}
-  <li><a href="{{ s }}" target="_blank">{{ s }}</a></li>
-  {% endfor %}
-</ul>
+<section class="sources-section">
+  <hr />
+  <h3>IRS sources used for the “Updates” panel</h3>
+  <ul class="sources-list">
+    {% for s in sources %}
+    <li>
+      <a href="{{ s }}" target="_blank" rel="noopener noreferrer">{{ s }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
 
 {% endblock %}
