@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Open Working File</h2>
+
+<form method="post" action="/workspace/load">
+  <select name="workspace_name" required>
+    <option value="">Select a working file</option>
+    {% for w in workspaces %}
+    <option value="{{ w }}">{{ w }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Open</button>
+</form>
+
+{% endblock %}

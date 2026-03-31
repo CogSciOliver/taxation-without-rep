@@ -1,10 +1,11 @@
-# v2.1.0 in progress 03.31.2026 10:31, author Danii Oliver 
+# v2.2.0 in progress 03.31.2026 10:31, author Danii Oliver 
 
 from __future__ import annotations
 
 import io
 import re
 import uuid
+import json
 
 import pandas as pd
 from fastapi import FastAPI, UploadFile, File, Request, Form
@@ -22,6 +23,8 @@ from pipeline import (
     export_workbook,
 )
 from tax_updates import fetch_tax_updates, IRS_UPDATES_SOURCES
+from pathlib import Path
+from datetime import datetime
 
 
 app = FastAPI()
@@ -60,6 +63,84 @@ DESCRIPTION_ALIASES = {
     "transactiondescription",
     "transaction_description",
 }
+
+WORKSPACES_DIR = Path("data/workspaces")
+WORKSPACES_DIR.mkdir(parents=True, exist_ok=True)
+
+# Create and Save Local Workspace Functions
+# =============================================
+
+def _slugify_workspace_name(name: str) -> str:
+    text = re.sub(r"[^a-zA-Z0-9_-]+", "-", name.strip().lower())
+    return text.strip("-") or "workspace"
+
+
+def _workspace_path(name: str) -> Path:
+    return WORKSPACES_DIR / f"{_slugify_workspace_name(name)}.json"
+
+
+def _serialize_df(df: pd.DataFrame) -> list[dict]:
+    serial = df.copy()
+
+    if "date" in serial.columns:
+        serial["date"] = pd.to_datetime(serial["date"], errors="coerce")
+        serial["date"] = serial["date"].dt.strftime("%Y-%m-%d")
+
+    return serial.to_dict(orient="records")
+
+
+def _deserialize_df(records: list[dict]) -> pd.DataFrame:
+    df = pd.DataFrame(records)
+
+    if "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+
+    return df
+
+
+def save_workspace(name: str, session_payload: dict) -> str:
+    path = _workspace_path(name)
+    df = session_payload["df"].copy()
+
+    payload = {
+        "workspace_name": name,
+        "filename": session_payload.get("filename", ""),
+        "entity_mode": session_payload.get("entity_mode", "schedule_c"),
+        "selected_year": session_payload.get("selected_year"),
+        "warnings": session_payload.get("warnings", []),
+        "updated_at": datetime.now().isoformat(),
+        "df": _serialize_df(df),
+    }
+
+    path.write_text(json.dumps(payload, indent=2))
+    return str(path)
+
+
+def load_workspace(name: str) -> dict:
+    path = _workspace_path(name)
+    if not path.exists():
+        raise FileNotFoundError(f"Workspace not found: {name}")
+
+    payload = json.loads(path.read_text())
+    df = _deserialize_df(payload.get("df", []))
+
+    rebuilt = _build_session_payload(
+        df=df,
+        filename=payload.get("filename", f"{name}.json"),
+        entity_mode=payload.get("entity_mode", "schedule_c"),
+        upload_notes=payload.get("warnings", []),
+        selected_year=payload.get("selected_year"),
+    )
+    rebuilt["stage"] = "complete"
+    return rebuilt
+
+
+def list_workspaces() -> list[str]:
+    return sorted([p.stem for p in WORKSPACES_DIR.glob("*.json")])
+
+# =============================================
+# End Create and Save Local Workspace Functions
+
 
 
 def _canon_col(name: str) -> str:
@@ -163,6 +244,17 @@ def _build_session_payload(
 
     if upload_notes:
         warnings.extend(upload_notes)
+
+# Add workspace columns now
+    if "pl_section" not in df.columns:
+        df["pl_section"] = df["amount"].apply(lambda x: "income" if x > 0 else "expense")
+
+    if "cash_flow_bucket" not in df.columns:
+        df["cash_flow_bucket"] = ""
+
+    if "source_kind" not in df.columns:
+        df["source_kind"] = ""
+# End Add workspace columns now "IS THIS IN THE RIGHT LOCATION OR SHOULD IT BE IN PIPELINE.PY?"
 
     return {
         "filename": filename,
@@ -629,7 +721,6 @@ def non_pl_page(request: Request, token: str):
         },
     )
 
-
 @app.get("/categories", response_class=HTMLResponse)
 def categories_page(request: Request, token: str):
     if token not in SESSIONS:
@@ -648,7 +739,6 @@ def categories_page(request: Request, token: str):
             "pl_cat": p["pl_by_cat"].to_html(index=False),
         },
     )
-
 
 @app.get("/bulk-edit", response_class=HTMLResponse)
 def bulk_edit_page(
@@ -738,7 +828,6 @@ def bulk_edit_page(
         },
     )
 
-
 @app.post("/bulk-edit/apply")
 async def bulk_edit_apply(
     token: str = Form(...),
@@ -781,9 +870,41 @@ async def bulk_edit_apply(
 
     return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
 
+# NEW V2.0.0 FEATURE ROUTES START HERE
+
+@app.post("/workspace/save")
+async def workspace_save(
+    token: str = Form(...),
+    workspace_name: str = Form(...),
+):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired.", status_code=404)
+
+    save_workspace(workspace_name, SESSIONS[token])
+    return RedirectResponse(f"/summary?token={token}", status_code=303)
+
+@app.get("/workspace/open", response_class=HTMLResponse)
+def workspace_open_page(request: Request):
+    return templates.TemplateResponse(
+        "workspace_open.html",
+        {
+            "request": request,
+            "nav": "upload",
+            "title": "Open Working File",
+            "workspaces": list_workspaces(),
+        },
+    )
 
 
-
+@app.post("/workspace/load")
+async def workspace_load(
+    workspace_name: str = Form(...),
+):
+    payload = load_workspace(workspace_name)
+    token = str(uuid.uuid4())
+    SESSIONS[token] = payload
+    return RedirectResponse(f"/summary?token={token}", status_code=303)
+# END NEW V2.0.0 FEATURE ROUTES HERE
 
 
 
