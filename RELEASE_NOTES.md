@@ -106,7 +106,8 @@ Final P&L Structure I need to be able to Take in Revenue CSV (1 or more) > Save 
 
 
 
-
+## v2.2.0 
+Sidebar now opens saved workspaces. upload: pass bulk edit: pass save named workspace: pass open working file entry: pass auto-save after edit: pass preserved edits after reopen: pass load reports from saved edits: pass.
 
 ## v2.1.0
 Results, Users click: Date, Description, Amount, Category click again to reverse: asc / desc

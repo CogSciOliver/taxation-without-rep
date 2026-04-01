@@ -124,15 +124,31 @@ def load_workspace(name: str) -> dict:
     payload = json.loads(path.read_text())
     df = _deserialize_df(payload.get("df", []))
 
-    rebuilt = _build_session_payload(
-        df=df,
-        filename=payload.get("filename", f"{name}.json"),
-        entity_mode=payload.get("entity_mode", "schedule_c"),
-        upload_notes=payload.get("warnings", []),
-        selected_year=payload.get("selected_year"),
-    )
-    rebuilt["stage"] = "complete"
-    return rebuilt
+    if "_row_id" not in df.columns:
+        df = df.reset_index(drop=True).copy()
+        df["_row_id"] = df.index.astype(str)
+
+    pl_by_cat, pl_by_month = build_pl_tables(df)
+    flags = build_flags(df)
+    forms = build_form_checklist(entity_mode=payload.get("entity_mode", "schedule_c"))
+    updates = fetch_tax_updates()
+
+    return {
+        "stage": "complete",
+        "workspace_name": payload.get("workspace_name", name),
+        "filename": payload.get("filename", f"{name}.json"),
+        "entity_mode": payload.get("entity_mode", "schedule_c"),
+        "selected_year": payload.get("selected_year"),
+        "warnings": payload.get("warnings", []),
+        "df": df,
+        "pl_by_cat": pl_by_cat,
+        "pl_by_month": pl_by_month,
+        "flags": flags,
+        "forms": forms,
+        "updates": updates,
+        "undo_stack": [],
+        "bulk_edit_filters": {},
+    }
 
 
 def list_workspaces() -> list[str]:
@@ -868,6 +884,10 @@ async def bulk_edit_apply(
     s["df"] = df
     _rebuild_session_outputs(token)
 
+    workspace_name = s.get("workspace_name")
+    if workspace_name:
+        save_workspace(workspace_name, s)
+
     return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
 
 # NEW V2.0.0 FEATURE ROUTES START HERE
@@ -881,6 +901,7 @@ async def workspace_save(
         return HTMLResponse("Session expired.", status_code=404)
 
     save_workspace(workspace_name, SESSIONS[token])
+    SESSIONS[token]["workspace_name"] = workspace_name
     return RedirectResponse(f"/summary?token={token}", status_code=303)
 
 @app.get("/workspace/open", response_class=HTMLResponse)
