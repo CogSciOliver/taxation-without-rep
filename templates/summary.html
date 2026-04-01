@@ -33,6 +33,13 @@
   </ul>
 
   <h3 class="section-heading">Go to reports</h3>
+  <!-- V.2.0.0 Workspace Save Form -->
+  <form method="post" action="/workspace/save">
+    <input type="hidden" name="token" value="{{ token }}">
+    <input type="text" name="workspace_name" placeholder="Working file name" required>
+    <button type="submit">Save Working File</button>
+  </form>
+  <!-- V.2.0.0 END Workspace Save Form -->
   <div class="summary-links">
     <a href="/pl/monthly?token={{ token }}">View Monthly P&amp;L</a>
     <a href="/pl/annual?token={{ token }}">View Annual P&amp;L</a>
@@ -43,13 +50,7 @@
     <a href="/export.xlsx?token={{ token }}">Export Excel</a>
   </div>
 
-<!-- V.2.0.0 Workspace Save Form -->
-  <form method="post" action="/workspace/save">
-    <input type="hidden" name="token" value="{{ token }}">
-    <input type="text" name="workspace_name" placeholder="Working file name" required>
-    <button type="submit">Save Working File</button>
-  </form>
-<!-- V.2.0.0 END Workspace Save Form -->
+
 
   {% if kpis.flag_count and kpis.flag_count > 0 %}
   <h3 class="section-heading">Flags</h3>
