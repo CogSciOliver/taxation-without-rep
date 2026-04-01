@@ -98,11 +98,8 @@ Continue editing from last saved state.
 Final P&L Structure I need to be able to Take in Revenue CSV (1 or more) > Save to selected working file for final data pull Take in Expense CSV (1 or more) > Save to selected working file for final data pull = uploading 1 or more files that copy and save to 1 working file (Named by User stored Locally) The Selected file (Named by User stored Locally), needs to be is editable moving income to income section only and expenses to expenses only and removing non-pl items to "cash flow" selection removed from the flagged for P&L edits not deleted forever but saved for cash flow reports much later on. So lets work on saving for later continued work > user edits a bit leaves then comes back, selects a working file to keep working on
 
 ======================== Pending ====================================
-## v2.2.5
-Expose Year Select in the upload flow if multi year is uploaded 
 
-
-## v2.2.4
+## Later Patch 
 Change 
 ```
 if token not in SESSIONS:
@@ -111,7 +108,16 @@ if token not in SESSIONS:
 
 to return to main landing page = load select workspace page (with last working file as first card) or upload new 
 
-## v2.2.3 - On the summary page uncategorized is listed as 0 while the results page states 
+
+## v4.0.0 - Year Select 
+Expose Year Select in the upload flow if multi year is uploaded 
+foundation for full account upload with expense and income and multiple years 
+
+
+## v3.0.0 - Display 
+
+## v3.1.0 - Display: Summary
+On the summary page uncategorized is listed as 0 while the results page states 
 expense	Uncategorized	74344.61
 Uncategorized on the summary page is not calculating 
 
@@ -124,30 +130,95 @@ also this block in summary page not working
   {# Save for later to create an editor //uncategorizedEditor #}
   {% endif %}
 
+## v3.2.0 - Display: P&L: Format & Display
+Income Should display above Expenses
+Income should be its own table 
+Expenses should be its own table 
+
+## v3.3.0 - Display: Tables: Duplicate Warning 
+dedupe or separate import notes display.
 
 
-============================= Working ===============================
+## v3.3.1 - Display: Tables: Collapse Table 
+Show Icon to Open table display 
+Table Name 
+TH 
+3 rows ...
+when closed 
+
+Show Icon to Close table display 
+Table Name 
+TH 
+ALL rows
+when open 
+
+## v3.3.2 - Display: Tables: Sorting 
+Flags, Non-P&L <th> Sort 
 
 
+
+## v2.2.4 Bulk Edit: Save: Merchant, Category, PL Listed, Cash Flow Listed rules learned and saved as part of user's profile 
+save merchant rule, where this becomes dangerously powerful.
+
+## v2.2.3 Bulk Edit: Save: Imports 
+Make Upload offer the same CSV sorting for revnues upload , expense upload and keep bank upload for mixed as Add More Data does
+============================== Working ===============================
+
+## v2.2.3 Bulk Edit: Save: Imports (Add More Data and Merge/Save)
+foundation for 1+ revenue and 1+ expense files later
+Goal - A user should be able to:
+create or open a working file
+add 1 or more revenue CSVs
+add 1 or more expense CSVs
+merge them into the current workspace
+keep editing in Bulk Edit
+auto-save the merged result back to that workspace
+> now
+reads multiple files
+normalizes each separately
+forces sign by revenue or expense
+stamps source tracking columns
+appends into current session
+rebuilds reports
+auto-saves if workspace already exists
+> then
+imported revenue/expense file history gets written into workspace JSON
+reopening a saved workspace restores that import history
+later your import page can show those imported files reliably
+
+> test this flow
+click Add More Data : pass 
+confirm page loads : pass with duplicates 
+confirm sidebar highlights Add More Data : pass 
+
+upload a new CSV for new workspace  : pass 
+import one revenue file  : pass 
+import one expense file  : pass 
+confirm merged rows show in Bulk Edit and reports  : pass 
 
 =============================== Commited =============================
 
-## v2.2.2 - User Workspace Title Display, minor nav display fixes, save file location fix, pipeline import corrected 
+## v2.2.2 - Bulk Edit: Save: User Workspace Title Display, minor nav display fixes, save file location fix, pipeline import corrected 
 User should know while workspace file they are viewing / editing after opening/load a saved file or having had uploaded a new file that was not yet saves 
 Syntax: 
 Saved {current file name}
 Unsaved New Upload File {Warn: Save now to retain changes}
 this should be at the top of all pages after a session starts so maybe in base for navigation persistence? Unless you have a better thought. 
+User Flow: 
+Open Working File active state: pass
+Persistent saved/unsaved session banner: pass
+Inline save form for unsaved uploads: pass
 
-## v2.2.1  — Working files auto save edits & reopen from landing page
+## v2.2.1  — Bulk Edit: Save: Working files auto save edits & reopen from landing page
 Sidebar now opens saved workspaces. upload: pass bulk edit: pass save named workspace: pass open working file entry: pass auto-save after edit: pass preserved edits after reopen: pass load reports from saved edits: pass.
 
-## v2.2.0 — Local save uploaded working file
+## v2.2.0 — Bulk Edit: Save 
+Locally Save uploaded working file with Bulk Edits made
 
-## v2.1.0
+## v2.1.0 - Bulk Edit: Sort
 Results, Users click: Date, Description, Amount, Category click again to reverse: asc / desc
 
-## v2.0.0 - Bulk Edit 
+# v2.0.0 - Bulk Edit: 
 bulk correct & rebuild P&L cleanly (does not save beyond session)
 
 ## v1.0.0 

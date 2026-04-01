@@ -1,0 +1,63 @@
+<!-- 
+# workspace_import.html _ v2.2.3 BULK EDIT: SAVE: IMPORTS 
+- WORK IN PROGRESS 04.01.2026 16:40, author Danii Oliver 
+-->
+
+
+{% extends "base.html" %}
+{% block content %}
+
+<section class="page-header">
+    <h1>Add More Data</h1>
+    <p>Add one or more revenue or expense CSV files into this working file.</p>
+</section>
+
+<section class="card">
+    {% if selected_year %}
+    <p><strong>Working year:</strong> {{ selected_year }}</p>
+    {% endif %}
+
+    {% if warnings %}
+    <div class="alert alert-note">
+        <strong>Import Notes</strong>
+        <ul>
+            {% for w in warnings %}
+            <li>{{ w }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h3>Import Revenue CSV(s)</h3>
+    <form method="post" action="/workspace/import/revenue" enctype="multipart/form-data">
+        <input type="hidden" name="token" value="{{ token }}">
+        <input type="file" name="files" accept=".csv" multiple required>
+        <button type="submit">Add Revenue CSV(s)</button>
+    </form>
+</section>
+
+<section class="card">
+    <h3>Import Expense CSV(s)</h3>
+    <form method="post" action="/workspace/import/expense" enctype="multipart/form-data">
+        <input type="hidden" name="token" value="{{ token }}">
+        <input type="file" name="files" accept=".csv" multiple required>
+        <button type="submit">Add Expense CSV(s)</button>
+    </form>
+</section>
+
+<section class="card">
+    <h3>Imported Files</h3>
+    {% if imported_files %}
+    <ul>
+        {% for item in imported_files %}
+        <li>{{ item.name }} — {{ item.group }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No additional files imported yet.</p>
+    {% endif %}
+</section>
+
+{% endblock %}

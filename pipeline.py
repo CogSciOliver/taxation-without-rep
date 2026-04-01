@@ -1,4 +1,4 @@
-# v2.2.2 WORK IN PROGRESS 04.01.2026 13:00, author Danii Oliver 
+# pipeline.py _ v2.2.3 BULK EDIT: SAVE: IMPORTS - WORK IN PROGRESS 04.01.2026 16:40, author Danii Oliver 
 
 from __future__ import annotations
 import json
@@ -217,6 +217,30 @@ def initialize_workspace_columns(df: pd.DataFrame) -> pd.DataFrame:
 
     if "source_kind" not in df.columns:
         df["source_kind"] = ""
+
+    if "source_group" not in df.columns:
+        df["source_group"] = ""
+
+    if "source_file" not in df.columns:
+        df["source_file"] = ""
+
+    if "import_batch_id" not in df.columns:
+        df["import_batch_id"] = ""
+
+    return df
+
+
+def apply_source_group_sign(df: pd.DataFrame, source_group: str) -> pd.DataFrame:
+    df = df.copy()
+
+    if source_group == "revenue":
+        df["amount"] = df["amount"].abs()
+    elif source_group == "expense":
+        df["amount"] = -df["amount"].abs()
+
+    df["abs_amount"] = df["amount"].abs()
+    df["direction"] = df["amount"].apply(lambda x: "in" if x > 0 else "out")
+    df["pl_section"] = df["amount"].apply(lambda x: "income" if x > 0 else "expense")
 
     return df
 

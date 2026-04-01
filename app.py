@@ -1,4 +1,4 @@
-# v2.2.2 WORK IN PROGRESS 04.01.2026 14:43, author Danii Oliver 
+# app.py _ v2.2.3 BULK EDIT: SAVE: IMPORTS - WORK IN PROGRESS 04.01.2026 16:40, author Danii Oliver 
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ from fastapi.templating import Jinja2Templates
 from pipeline import (
     normalize_bank_csv,
     initialize_workspace_columns,
+    apply_source_group_sign,
     apply_categorization,
     detect_non_pl_items,
     build_pl_tables,
@@ -23,6 +24,7 @@ from pipeline import (
     build_form_checklist,
     export_workbook,
 )
+
 from tax_updates import fetch_tax_updates, IRS_UPDATES_SOURCES
 from pathlib import Path
 from datetime import datetime
@@ -109,6 +111,7 @@ def save_workspace(name: str, session_payload: dict) -> str:
         "entity_mode": session_payload.get("entity_mode", "schedule_c"),
         "selected_year": session_payload.get("selected_year"),
         "warnings": session_payload.get("warnings", []),
+        "imported_files": session_payload.get("imported_files", []),
         "updated_at": datetime.now().isoformat(),
         "df": _serialize_df(df),
     }
@@ -141,6 +144,7 @@ def load_workspace(name: str) -> dict:
         "entity_mode": payload.get("entity_mode", "schedule_c"),
         "selected_year": payload.get("selected_year"),
         "warnings": payload.get("warnings", []),
+        "imported_files": payload.get("imported_files", []),
         "df": df,
         "pl_by_cat": pl_by_cat,
         "pl_by_month": pl_by_month,
@@ -277,7 +281,80 @@ def _build_session_payload(
         "selected_year": selected_year,
         "undo_stack": [],
         "bulk_edit_filters": {},
+        "imported_files": [],
     }
+
+
+async def _import_files_into_session(
+    *,
+    token: str,
+    files: list[UploadFile],
+    source_group: str,
+) -> list[str]:
+    session = SESSIONS[token]
+    existing_df = session["df"].copy()
+    import_notes: list[str] = []
+    batch_id = str(uuid.uuid4())
+
+    for file in files:
+        raw = await file.read()
+
+        try:
+            incoming_df = pd.read_csv(pd.io.common.BytesIO(raw))
+        except Exception as exc:
+            import_notes.append(f"Could not read {file.filename or 'upload.csv'}: {exc}")
+            continue
+
+        try:
+            prepped_df, upload_notes = _prepare_upload_df(incoming_df)
+
+            incoming_df = normalize_bank_csv(prepped_df)
+            incoming_df = initialize_workspace_columns(incoming_df)
+            incoming_df = apply_source_group_sign(incoming_df, source_group)
+            incoming_df = apply_categorization(incoming_df)
+            incoming_df = detect_non_pl_items(incoming_df)
+
+            incoming_df["source_group"] = source_group
+            incoming_df["source_file"] = file.filename or "upload.csv"
+            incoming_df["import_batch_id"] = batch_id
+            incoming_df["source_kind"] = f"{source_group}_import"
+
+            existing_df = pd.concat([existing_df, incoming_df], ignore_index=True)
+
+            import_notes.append(
+                f"Imported {len(incoming_df)} rows from {file.filename or 'upload.csv'} as {source_group}."
+            )
+
+            if upload_notes:
+                import_notes.extend(upload_notes)
+
+        except Exception as exc:
+            import_notes.append(f"Failed to import {file.filename or 'upload.csv'}: {exc}")
+
+    existing_df = existing_df.reset_index(drop=True).copy()
+    existing_df["_row_id"] = existing_df.index.astype(str)
+
+    session["df"] = existing_df
+    session.setdefault("warnings", [])
+    session["warnings"].extend(import_notes)
+
+    imported_files = session.setdefault("imported_files", [])
+    for file in files:
+        imported_files.append(
+            {
+                "name": file.filename or "upload.csv",
+                "group": source_group,
+                "batch_id": batch_id,
+            }
+        )
+
+    _rebuild_session_outputs(token)
+
+    workspace_name = session.get("workspace_name")
+    if workspace_name:
+        save_workspace(workspace_name, session)
+
+    return import_notes
 
 
 def _rebuild_session_outputs(token: str) -> None:
@@ -930,6 +1007,63 @@ async def workspace_load(
     token = str(uuid.uuid4())
     SESSIONS[token] = payload
     return RedirectResponse(f"/summary?token={token}", status_code=303)
+
+
+@app.get("/workspace/import", response_class=HTMLResponse)
+def workspace_import_page(request: Request, token: str):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired. Re-upload.", status_code=404)
+
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
+        return RedirectResponse(f"/year-select?token={token}", status_code=303)
+
+    return templates.TemplateResponse(
+        "workspace_import.html",
+        {
+            "request": request,
+            "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
+            "nav": "workspace_import",
+            "entity_mode": sess["entity_mode"],
+            "selected_year": sess.get("selected_year"),
+            "warnings": sess.get("warnings", []),
+            "imported_files": sess.get("imported_files", []),
+        },
+    )
+
+@app.post("/workspace/import/revenue")
+async def workspace_import_revenue(
+    token: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired.", status_code=404)
+
+    await _import_files_into_session(
+        token=token,
+        files=files,
+        source_group="revenue",
+    )
+    return RedirectResponse(f"/workspace/import?token={token}", status_code=303)
+
+@app.post("/workspace/import/expense")
+async def workspace_import_expense(
+    token: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired.", status_code=404)
+
+    await _import_files_into_session(
+        token=token,
+        files=files,
+        source_group="expense",
+    )
+    return RedirectResponse(f"/workspace/import?token={token}", status_code=303)
+
+
 # END NEW V2.0.0 FEATURE ROUTES HERE
 
 
