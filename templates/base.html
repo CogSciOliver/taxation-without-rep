@@ -1,3 +1,5 @@
+<!-- # v2.2.2 WORK IN PROGRESS 04.01.2026 14:43, author Danii Oliver   -->
+
 <!doctype html>
 <html lang="en">
 
@@ -14,7 +16,7 @@
       <h3 class="site-title">Taxation No Rep App</h3>
 
       <a href="/" class="{{ 'active' if nav=='upload' else '' }}">Upload</a>
-      <a href="/workspace/open" class="{{ 'active' if title=='Open Working File' else '' }}">Open Working File</a>
+      <a href="/workspace/open" class="{{ 'active' if nav=='workspace_open' else '' }}">Open Working File</a>
 
       {% if token %}
       <hr class="sidebar-divider" />
@@ -30,6 +32,25 @@
     </aside>
 
     <main class="content">
+      {% if token %}
+      {% if workspace_name %}
+      <div class="session-file-status saved">
+        Current Saved Working File: <strong>{{ workspace_name }}</strong>
+      </div>
+      {% else %}
+      <div class="session-file-status unsaved">
+        <strong>Unsaved New Upload File:</strong> {{ filename }}
+        <!-- V.2.0.0 Workspace Save Form -->
+        <form method="post" action="/workspace/save" class="session-save-form">
+          <input type="hidden" name="token" value="{{ token }}">
+          <input type="text" name="workspace_name" placeholder="Working file name" required>
+          <button type="submit">Save Working File</button>
+        </form>
+        <!-- V.2.0.0 END Workspace Save Form -->
+      </div>
+      {% endif %}
+      {% endif %}
+
       {% block content %}{% endblock %}
     </main>
   </div>

@@ -1,4 +1,4 @@
-# v2.2.0 in progress 04.01.2026 09:43, author Danii Oliver 
+# v2.2.2 WORK IN PROGRESS 04.01.2026 14:43, author Danii Oliver 
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from fastapi.templating import Jinja2Templates
 
 from pipeline import (
     normalize_bank_csv,
+    initialize_workspace_columns,
     apply_categorization,
     detect_non_pl_items,
     build_pl_tables,
@@ -242,6 +243,7 @@ def _build_session_payload(
     selected_year: int | None = None,
 ) -> dict:
     df = normalize_bank_csv(df)
+    df = initialize_workspace_columns(df)
     df = apply_categorization(df)
     df = detect_non_pl_items(df)
 
@@ -261,18 +263,8 @@ def _build_session_payload(
     if upload_notes:
         warnings.extend(upload_notes)
 
-# Add workspace columns now
-    if "pl_section" not in df.columns:
-        df["pl_section"] = df["amount"].apply(lambda x: "income" if x > 0 else "expense")
-
-    if "cash_flow_bucket" not in df.columns:
-        df["cash_flow_bucket"] = ""
-
-    if "source_kind" not in df.columns:
-        df["source_kind"] = ""
-# End Add workspace columns now "IS THIS IN THE RIGHT LOCATION OR SHOULD IT BE IN PIPELINE.PY?"
-
     return {
+        "workspace_name": None,
         "filename": filename,
         "entity_mode": entity_mode,
         "df": df,
@@ -421,11 +413,11 @@ async def upload(
 
 @app.get("/year-select", response_class=HTMLResponse)
 def year_select(request: Request, token: str):
-    r = SESSIONS.get(token)
-    if not r:
+    sess = SESSIONS.get(token)
+    if not sess:
         return RedirectResponse("/", status_code=303)
 
-    if r.get("stage") != "awaiting_year_selection":
+    if sess.get("stage") != "awaiting_year_selection":
         return RedirectResponse(f"/summary?token={token}", status_code=303)
 
     return templates.TemplateResponse(
@@ -433,10 +425,11 @@ def year_select(request: Request, token: str):
         {
             "request": request,
             "token": token,
-            "filename": r["filename"],
-            "entity_mode": r["entity_mode"],
-            "years": r["years"],
-            "upload_notes": r.get("upload_notes", []),
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
+            "entity_mode": sess["entity_mode"],
+            "years": sess["years"],
+            "upload_notes": sess.get("upload_notes", []),
             "nav": "upload",
             "title": "Select Year",
         },
@@ -518,14 +511,14 @@ async def year_select_submit(
 
 @app.get("/summary", response_class=HTMLResponse)
 def summary(request: Request, token: str):
-    r = SESSIONS.get(token)
-    if not r:
+    sess = SESSIONS.get(token)
+    if not sess:
         return RedirectResponse("/", status_code=303)
 
-    if r.get("stage") == "awaiting_year_selection":
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
-    df = r["df"]
+    df = sess["df"]
 
     uncategorized_count = 0
     if "category" in df.columns:
@@ -560,7 +553,7 @@ def summary(request: Request, token: str):
         "total_income": round(total_income, 2),
         "total_expenses": round(total_expenses, 2),
         "net_profit": round(net_profit, 2),
-        "flag_count": int(len(r["flags"])) if r.get("flags") is not None else 0,
+        "flag_count": int(len(sess["flags"])) if sess.get("flags") is not None else 0,
         "non_pl_count": int((df["is_pl_item"] == False).sum()) if "is_pl_item" in df.columns else 0,
         "uncategorized_count": uncategorized_count,
         "date_min": date_min,
@@ -574,16 +567,17 @@ def summary(request: Request, token: str):
             "request": request,
             "nav": "summary",
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "kpis": kpis,
-            "forms": r["forms"],
-            "updates": r["updates"],
-            "filename": r["filename"],
-            "entity_mode": r["entity_mode"],
-            "selected_year": r.get("selected_year"),
-            "warnings": r.get("warnings", []),
-            "pl_cat": r["pl_by_cat"].to_html(index=False),
-            "pl_monthly": r["pl_by_month"].to_html(index=False),
-            "flags": r["flags"].to_html(index=False),
+            "forms": sess["forms"],
+            "updates": sess["updates"],
+            "entity_mode": sess["entity_mode"],
+            "selected_year": sess.get("selected_year"),
+            "warnings": sess.get("warnings", []),
+            "pl_cat": sess["pl_by_cat"].to_html(index=False),
+            "pl_monthly": sess["pl_by_month"].to_html(index=False),
+            "flags": sess["flags"].to_html(index=False),
             "non_pl": df[df["is_pl_item"] == False].head(200).to_html(index=False),
         },
     )
@@ -591,14 +585,14 @@ def summary(request: Request, token: str):
 
 @app.get("/results", response_class=HTMLResponse)
 def results(request: Request, token: str):
-    r = SESSIONS.get(token)
-    if not r:
+    sess = SESSIONS.get(token)
+    if not sess:
         return RedirectResponse("/", status_code=303)
 
-    if r.get("stage") == "awaiting_year_selection":
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
-    df = r["df"]
+    df = sess["df"]
 
     return templates.TemplateResponse(
         "results.html",
@@ -606,15 +600,16 @@ def results(request: Request, token: str):
             "request": request,
             "nav": "results",
             "token": token,
-            "filename": r["filename"],
-            "entity_mode": r["entity_mode"],
-            "selected_year": r.get("selected_year"),
-            "warnings": r.get("warnings", []),
-            "pl_cat": r["pl_by_cat"].to_html(index=False),
-            "pl_month": r["pl_by_month"].to_html(index=False),
-            "flags": r["flags"].to_html(index=False),
-            "forms": r["forms"],
-            "updates": r["updates"],
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
+            "entity_mode": sess["entity_mode"],
+            "selected_year": sess.get("selected_year"),
+            "warnings": sess.get("warnings", []),
+            "pl_cat": sess["pl_by_cat"].to_html(index=False),
+            "pl_month": sess["pl_by_month"].to_html(index=False),
+            "flags": sess["flags"].to_html(index=False),
+            "forms": sess["forms"],
+            "updates": sess["updates"],
             "non_pl": df[df["is_pl_item"] == False].head(200).to_html(index=False),
         },
     )
@@ -655,8 +650,8 @@ def pl_annual(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
-    r = SESSIONS[token]
-    if r.get("stage") == "awaiting_year_selection":
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
     return templates.TemplateResponse(
@@ -664,11 +659,12 @@ def pl_annual(request: Request, token: str):
         {
             "request": request,
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "nav": "annual",
-            "pl_cat": r["pl_by_cat"].to_html(index=False),
-            "filename": r["filename"],
-            "entity_mode": r["entity_mode"],
-            "selected_year": r.get("selected_year"),
+            "pl_cat": sess["pl_by_cat"].to_html(index=False),
+            "entity_mode": sess["entity_mode"],
+            "selected_year": sess.get("selected_year"),
         },
     )
 
@@ -678,8 +674,8 @@ def pl_monthly(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
-    r = SESSIONS[token]
-    if r.get("stage") == "awaiting_year_selection":
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
     return templates.TemplateResponse(
@@ -687,11 +683,12 @@ def pl_monthly(request: Request, token: str):
         {
             "request": request,
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "nav": "monthly",
-            "pl_month": r["pl_by_month"].to_html(index=False),
-            "filename": r["filename"],
-            "entity_mode": r["entity_mode"],
-            "selected_year": r.get("selected_year"),
+            "pl_month": sess["pl_by_month"].to_html(index=False),
+            "entity_mode": sess["entity_mode"],
+            "selected_year": sess.get("selected_year"),
         },
     )
 
@@ -701,8 +698,8 @@ def flags_page(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
-    p = SESSIONS[token]
-    if p.get("stage") == "awaiting_year_selection":
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
     return templates.TemplateResponse(
@@ -710,8 +707,10 @@ def flags_page(request: Request, token: str):
         {
             "request": request,
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "nav": "flags",
-            "flags": p["flags"].to_html(index=False),
+            "flags": sess["flags"].to_html(index=False),
         },
     )
 
@@ -721,17 +720,19 @@ def non_pl_page(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
-    p = SESSIONS[token]
-    if p.get("stage") == "awaiting_year_selection":
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
-    df = p["df"]
+    df = sess["df"]
 
     return templates.TemplateResponse(
         "non_pl.html",
         {
             "request": request,
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "nav": "nonpl",
             "non_pl": df[df["is_pl_item"] == False].to_html(index=False),
         },
@@ -742,8 +743,8 @@ def categories_page(request: Request, token: str):
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
-    p = SESSIONS[token]
-    if p.get("stage") == "awaiting_year_selection":
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
     return templates.TemplateResponse(
@@ -751,8 +752,10 @@ def categories_page(request: Request, token: str):
         {
             "request": request,
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "nav": "categories",
-            "pl_cat": p["pl_by_cat"].to_html(index=False),
+            "pl_cat": sess["pl_by_cat"].to_html(index=False),
         },
     )
 
@@ -769,11 +772,11 @@ def bulk_edit_page(
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
-    s = SESSIONS[token]
-    if s.get("stage") == "awaiting_year_selection":
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
-    df = s["df"].copy()
+    df = sess["df"].copy()
     view = df.copy()
 
     if q:
@@ -828,6 +831,8 @@ def bulk_edit_page(
         {
             "request": request,
             "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
             "nav": "bulk_edit",
             "rows": view.to_dict(orient="records"),
             "categories": categories,
@@ -910,7 +915,7 @@ def workspace_open_page(request: Request):
         "workspace_open.html",
         {
             "request": request,
-            "nav": "upload",
+            "nav": "workspace_open",
             "title": "Open Working File",
             "workspaces": list_workspaces(),
         },

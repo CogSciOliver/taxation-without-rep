@@ -1,4 +1,4 @@
-# v2.0.0 03.31.2026 08:31, author Danii Oliver
+# v2.2.2 WORK IN PROGRESS 04.01.2026 13:00, author Danii Oliver 
 
 from __future__ import annotations
 import json
@@ -204,6 +204,21 @@ def normalize_bank_csv(df: pd.DataFrame) -> pd.DataFrame:
     out["non_pl_reason"] = ""
 
     return out
+
+
+def initialize_workspace_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    if "pl_section" not in df.columns:
+        df["pl_section"] = df["amount"].apply(lambda x: "income" if x > 0 else "expense")
+
+    if "cash_flow_bucket" not in df.columns:
+        df["cash_flow_bucket"] = ""
+
+    if "source_kind" not in df.columns:
+        df["source_kind"] = ""
+
+    return df
 
 
 def apply_categorization(df: pd.DataFrame) -> pd.DataFrame:

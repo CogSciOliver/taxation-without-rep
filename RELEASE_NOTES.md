@@ -11,7 +11,6 @@ v2.3.0 = merchant rule persistence layered on top
 03.31.26 > Stopped work at append imports into existing workspace
 ============================================================
 
-## v2.2.0 — Local working files
 Build this next.
 
 Goal:
@@ -98,16 +97,52 @@ Continue editing from last saved state.
 
 Final P&L Structure I need to be able to Take in Revenue CSV (1 or more) > Save to selected working file for final data pull Take in Expense CSV (1 or more) > Save to selected working file for final data pull = uploading 1 or more files that copy and save to 1 working file (Named by User stored Locally) The Selected file (Named by User stored Locally), needs to be is editable moving income to income section only and expenses to expenses only and removing non-pl items to "cash flow" selection removed from the flagged for P&L edits not deleted forever but saved for cash flow reports much later on. So lets work on saving for later continued work > user edits a bit leaves then comes back, selects a working file to keep working on
 
+======================== Pending ====================================
+## v2.2.5
+Expose Year Select in the upload flow if multi year is uploaded 
+
+
+## v2.2.4
+Change 
+```
+if token not in SESSIONS:
+        return HTMLResponse("Session expired. Re-upload.", status_code=404)
+```
+
+to return to main landing page = load select workspace page (with last working file as first card) or upload new 
+
+## v2.2.3 - On the summary page uncategorized is listed as 0 while the results page states 
+expense	Uncategorized	74344.61
+Uncategorized on the summary page is not calculating 
+
+also this block in summary page not working 
+
+  {% if kpis.uncategorized_count > 0 %}
+  <h3 class="section-heading">Uncategorized</h3>
+  {# <p>You have <b>{{ kpis.uncategorized_count }}</b> items to edit.</p>
+  <a href="/uncategorized?token={{ token }}">Review Uncategorized</a> #}
+  {# Save for later to create an editor //uncategorizedEditor #}
+  {% endif %}
 
 
 
+============================= Working ===============================
 
 
 
+=============================== Commited =============================
 
+## v2.2.2 - User Workspace Title Display, minor nav display fixes, save file location fix, pipeline import corrected 
+User should know while workspace file they are viewing / editing after opening/load a saved file or having had uploaded a new file that was not yet saves 
+Syntax: 
+Saved {current file name}
+Unsaved New Upload File {Warn: Save now to retain changes}
+this should be at the top of all pages after a session starts so maybe in base for navigation persistence? Unless you have a better thought. 
 
-## v2.2.0 
+## v2.2.1  — Working files auto save edits & reopen from landing page
 Sidebar now opens saved workspaces. upload: pass bulk edit: pass save named workspace: pass open working file entry: pass auto-save after edit: pass preserved edits after reopen: pass load reports from saved edits: pass.
+
+## v2.2.0 — Local save uploaded working file
 
 ## v2.1.0
 Results, Users click: Date, Description, Amount, Category click again to reverse: asc / desc
