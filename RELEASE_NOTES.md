@@ -5,7 +5,7 @@ pending patch - Bulk edit Undo does not have functionality.
 {# 
 03.31.26
 v2.2.0 = local named workspaces with saved editable transaction state
-v2.3.0 = merchant rule persistence layered on top
+v2.2.5 = merchant rule persistence layered on top
  #}
 
 03.31.26 > Stopped work at append imports into existing workspace
@@ -109,11 +109,6 @@ if token not in SESSIONS:
 to return to main landing page = load select workspace page (with last working file as first card) or upload new 
 
 
-## v4.0.0 - Year Select 
-Expose Year Select in the upload flow if multi year is uploaded 
-foundation for full account upload with expense and income and multiple years 
-
-
 ## v3.0.0 - Display 
 
 ## v3.1.0 - Display: Summary
@@ -156,13 +151,41 @@ when open
 Flags, Non-P&L <th> Sort 
 
 
+## v3.4.0 - Display: Year Select 
+in Summary if multiple years deteched ask which year to use and/or time frame in case fiscal year is not calendar year or the user need a snapshot for the quarter or custom time frame. 
+Expose Year Select in the upload flow if multi year is uploaded 
+foundation for full account upload with expense and income and multiple years 
 
-## v2.2.4 Bulk Edit: Save: Merchant, Category, PL Listed, Cash Flow Listed rules learned and saved as part of user's profile 
+
+
+
+## v2.2.5 Bulk Edit: Save: Merchant, Category, PL Listed, Cash Flow Listed rules learned and saved as part of user's profile 
 save merchant rule, where this becomes dangerously powerful.
 
-## v2.2.3 Bulk Edit: Save: Imports 
-Make Upload offer the same CSV sorting for revnues upload , expense upload and keep bank upload for mixed as Add More Data does
+
 ============================== Working ===============================
+## v2.2.4 Bulk Edit: Save: Import Multiple On Start
+Make Upload offer the same CSV sorting for revnues upload , expense upload and keep bank upload for mixed as Add More Data does
+
+test:
+mixed only  : pass
+revenue only  : pass
+expense only : pass
+revenue + expense together  : pass
+save workspace  : pass
+reopen and confirm merged result : pass
+
+The app can now start a working file in two good ways:
+
+Landing page
+mixed CSV(s)
+revenue CSV(s)
+expense CSV(s)
+Inside an existing workspace
+Add More Data
+import more revenue/expense later
+
+=============================== Commited =============================
 
 ## v2.2.3 Bulk Edit: Save: Imports (Add More Data and Merge/Save)
 foundation for 1+ revenue and 1+ expense files later
@@ -195,8 +218,6 @@ upload a new CSV for new workspace  : pass
 import one revenue file  : pass 
 import one expense file  : pass 
 confirm merged rows show in Bulk Edit and reports  : pass 
-
-=============================== Commited =============================
 
 ## v2.2.2 - Bulk Edit: Save: User Workspace Title Display, minor nav display fixes, save file location fix, pipeline import corrected 
 User should know while workspace file they are viewing / editing after opening/load a saved file or having had uploaded a new file that was not yet saves 

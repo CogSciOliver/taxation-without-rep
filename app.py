@@ -1,4 +1,5 @@
-# app.py _ v2.2.3 BULK EDIT: SAVE: IMPORTS - WORK IN PROGRESS 04.01.2026 16:40, author Danii Oliver 
+# app.py WORK IN PROGRESS, author Danii Oliver
+# v2.2.4 BULK EDIT:SAVE:IMPORTS 04.01.2026 16:50 
 
 from __future__ import annotations
 
@@ -357,6 +358,61 @@ async def _import_files_into_session(
     return import_notes
 
 
+async def _build_df_from_uploaded_files(
+    *,
+    files: list[UploadFile],
+    source_group: str | None = None,
+) -> tuple[pd.DataFrame, list[str]]:
+    merged_df = pd.DataFrame()
+    notes: list[str] = []
+    batch_id = str(uuid.uuid4())
+
+    for file in files:
+        raw = await file.read()
+
+        try:
+            incoming_df = pd.read_csv(pd.io.common.BytesIO(raw))
+        except Exception as exc:
+            notes.append(f"Could not read {file.filename or 'upload.csv'}: {exc}")
+            continue
+
+        try:
+            prepped_df, upload_notes = _prepare_upload_df(incoming_df)
+
+            incoming_df = normalize_bank_csv(prepped_df)
+            incoming_df = initialize_workspace_columns(incoming_df)
+
+            if source_group:
+                incoming_df = apply_source_group_sign(incoming_df, source_group)
+                incoming_df["source_group"] = source_group
+                incoming_df["source_kind"] = f"{source_group}_import"
+            else:
+                incoming_df["source_kind"] = "mixed_upload"
+
+            incoming_df = apply_categorization(incoming_df)
+            incoming_df = detect_non_pl_items(incoming_df)
+
+            incoming_df["source_file"] = file.filename or "upload.csv"
+            incoming_df["import_batch_id"] = batch_id
+
+            merged_df = pd.concat([merged_df, incoming_df], ignore_index=True)
+
+            notes.append(f"Loaded {len(incoming_df)} rows from {file.filename or 'upload.csv'}.")
+            if upload_notes:
+                notes.extend(upload_notes)
+
+        except Exception as exc:
+            notes.append(f"Failed to process {file.filename or 'upload.csv'}: {exc}")
+
+    if merged_df.empty:
+        raise ValueError("No valid CSV rows were loaded from the selected files.")
+
+    merged_df = merged_df.reset_index(drop=True).copy()
+    merged_df["_row_id"] = merged_df.index.astype(str)
+
+    return merged_df, notes
+
+
 def _rebuild_session_outputs(token: str) -> None:
     s = SESSIONS[token]
     df = s["df"].copy()
@@ -402,6 +458,115 @@ def index(request: Request):
         },
     )
 
+
+@app.post("/upload/start", response_class=HTMLResponse)
+async def upload_start(
+    request: Request,
+    mixed_files: list[UploadFile] = File([]),
+    revenue_files: list[UploadFile] = File([]),
+    expense_files: list[UploadFile] = File([]),
+    entity_mode: str = Form("schedule_c"),
+):
+    has_mixed = any(f.filename for f in mixed_files)
+    has_revenue = any(f.filename for f in revenue_files)
+    has_expense = any(f.filename for f in expense_files)
+
+    if not (has_mixed or has_revenue or has_expense):
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "sources": IRS_UPDATES_SOURCES,
+                "nav": "upload",
+                "title": "Upload",
+                "error": "Select at least one CSV file to start.",
+            },
+            status_code=400,
+        )
+
+    try:
+        all_frames = []
+        all_notes = []
+
+        if has_mixed:
+            mixed_df, mixed_notes = await _build_df_from_uploaded_files(
+                files=[f for f in mixed_files if f.filename],
+                source_group=None,
+            )
+            all_frames.append(mixed_df)
+            all_notes.extend(mixed_notes)
+
+        if has_revenue:
+            revenue_df, revenue_notes = await _build_df_from_uploaded_files(
+                files=[f for f in revenue_files if f.filename],
+                source_group="revenue",
+            )
+            all_frames.append(revenue_df)
+            all_notes.extend(revenue_notes)
+
+        if has_expense:
+            expense_df, expense_notes = await _build_df_from_uploaded_files(
+                files=[f for f in expense_files if f.filename],
+                source_group="expense",
+            )
+            all_frames.append(expense_df)
+            all_notes.extend(expense_notes)
+
+        df = pd.concat(all_frames, ignore_index=True).reset_index(drop=True)
+        df["_row_id"] = df.index.astype(str)
+
+        token = str(uuid.uuid4())
+
+        pl_by_cat, pl_by_month = build_pl_tables(df)
+        flags = build_flags(df)
+        forms = build_form_checklist(entity_mode=entity_mode)
+        updates = fetch_tax_updates()
+
+        SESSIONS[token] = {
+            "stage": "complete",
+            "workspace_name": None,
+            "filename": "File(s) Uploaded At Start",
+            "entity_mode": entity_mode,
+            "df": df,
+            "pl_by_cat": pl_by_cat,
+            "pl_by_month": pl_by_month,
+            "flags": flags,
+            "forms": forms,
+            "updates": updates,
+            "warnings": all_notes,
+            "selected_year": None,
+            "undo_stack": [],
+            "bulk_edit_filters": {},
+            "imported_files": [],
+        }
+
+        return RedirectResponse(url=f"/summary?token={token}", status_code=303)
+
+    except ValueError as exc:
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "sources": IRS_UPDATES_SOURCES,
+                "nav": "upload",
+                "title": "Upload",
+                "error": str(exc),
+            },
+            status_code=400,
+        )
+    except Exception as exc:
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "sources": IRS_UPDATES_SOURCES,
+                "nav": "upload",
+                "title": "Upload",
+                "error": f"Upload failed while preparing report: {exc}",
+            },
+            status_code=500,
+        )
+    
 
 @app.post("/upload", response_class=HTMLResponse)
 async def upload(

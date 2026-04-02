@@ -1,3 +1,8 @@
+<!-- 
+# index.html WORK IN PROGRESS, author Danii Oliver
+# v2.2.4 BULK EDIT:SAVE:IMPORTS 04.01.2026 16:50
+-->
+
 {% extends "base.html" %}
 {% block content %}
 
@@ -12,7 +17,7 @@
   </div>
   {% endif %}
 
-  <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form">
+  <form action="/upload/start" method="post" enctype="multipart/form-data" class="upload-form">
     <div class="form-row">
       <label for="entity_mode">Entity mode</label>
       <select id="entity_mode" name="entity_mode">
@@ -28,12 +33,31 @@
     </div>
 
     <div class="form-row">
-      <label for="file">Upload bank CSV</label>
-      <input id="file" type="file" name="file" accept=".csv" required />
+      <label for="mixed_files">Upload mixed bank CSV(s)</label>
+      <input id="mixed_files" type="file" name="mixed_files" accept=".csv" multiple />
+      <small class="field-help">
+        Use for full account history or mixed deposits + spending files.
+      </small>
+    </div>
+
+    <div class="form-row">
+      <label for="revenue_files">Upload revenue CSV(s)</label>
+      <input id="revenue_files" type="file" name="revenue_files" accept=".csv" multiple />
+      <small class="field-help">
+        Use when these files are income/revenue only.
+      </small>
+    </div>
+
+    <div class="form-row">
+      <label for="expense_files">Upload expense CSV(s)</label>
+      <input id="expense_files" type="file" name="expense_files" accept=".csv" multiple />
+      <small class="field-help">
+        Use when these files are spending/expense only.
+      </small>
     </div>
 
     <div class="form-actions">
-      <button type="submit">Upload &amp; Analyze</button>
+      <button type="submit">Upload &amp; Analyze to Start Working P&L File</button>
     </div>
   </form>
 </section>
