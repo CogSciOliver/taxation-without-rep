@@ -180,7 +180,7 @@ def _render_pl_table(df: pd.DataFrame) -> str:
         if label in {"gross profit", "net profit"}:
             style = "color: #f5f5f5; font-family: serif; font-weight: 800; font-size: 1.05rem; border-top: 3px double #999; border-bottom: 3px double #999; background: rgba(255,255,255,0.06);"
         elif label.startswith("total "):
-            style = "color: #f5f5f5; font-family: serif; font-weight: 400; font-size: 1.05rem; border-top: 2px solid #40c664; background: rgba(255,255,255,0.03);"
+            style = "color: #f5f5f5; font-family: serif; font-weight: 700; font-size: 1.05rem; border-top: 2px solid #40c664; background: rgba(255,255,255,0.03);"
         else:
             style = ""
 

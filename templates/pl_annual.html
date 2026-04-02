@@ -26,27 +26,16 @@
 
 
 <h3>Revenues</h3>
-{% if income_table %}
 {{ income_table|safe }}
-{% else %}
-<p>No income rows found.</p>
-{% endif %}
 
 <h4>Cost of Goods Sold</h4>
-{% if cogs_table %}
 {{ cogs_table|safe }}
-{% else %}
-<p>No cost of goods sold rows found.</p>
-{% endif %}
 
 <hr>
 
 <h3>Expenses</h3>
-{% if expense_table %}
 {{ expense_table|safe }}
-{% else %}
-<p>No expense rows found.</p>
-{% endif %}
+
 
 
 {% endblock %}

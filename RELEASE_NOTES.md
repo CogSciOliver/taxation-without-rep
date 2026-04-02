@@ -62,20 +62,26 @@ Next after this, the right cleanup is fixed P&L line ordering so expenses displa
 ## v later
 There is also a still-open app-level nav inconsistency: Summary links to /categories, but the sidebar still has no Categories item in base.html.
 
+## v later
+“rows with zero totals” you mean a real fixed statement like:
+a full canonical zero-filled P&L layout
 ============================== Working ===============================
+
+
+=============================== Commited =============================
+
+## v3.1.3 - Display: P&L: Removed conditional table display for proper P&L Structure  
 
 ## v3.1.2 - Display: P&L: Total and Bottom Line Styling 
 
 ## v3.1.1 - Display: P&L: Add in COGS for proper P&L Structure 
+COGS should be its own table 
+Totals should live in the tables in line with proper P&L doc structures
 
 ## v3.1.0 - Display: P&L: Format & Display
 Income Should display above Expenses
 Income should be its own table 
 Expenses should be its own table 
-
-
-
-=============================== Commited =============================
 
 ## v3.0.1 - Display: Summary visible uncategorized section for review and edits
 
