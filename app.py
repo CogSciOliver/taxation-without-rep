@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v3.1.0 DISPLAY: P&L Order 04.01.2026 23:12 
+# v3.1.2 DISPLAY: P&L COGS 04.02.2026 00:29 
 
 from __future__ import annotations
 
@@ -164,6 +164,40 @@ def list_workspaces() -> list[str]:
 # End Create and Save Local Workspace Functions
 
 
+
+# Create P&L Tables, Styles, Flags, and Form Checklist Functions
+# =============================================
+
+def _render_pl_table(df: pd.DataFrame) -> str:
+    if df.empty:
+        return ""
+
+    display_df = df.copy()
+
+    def row_styles(row):
+        label = str(row.get("category", "")).strip().lower()
+
+        if label in {"gross profit", "net profit"}:
+            style = "color: #f5f5f5; font-family: serif; font-weight: 800; font-size: 1.05rem; border-top: 3px double #999; border-bottom: 3px double #999; background: rgba(255,255,255,0.06);"
+        elif label.startswith("total "):
+            style = "color: #f5f5f5; font-family: serif; font-weight: 400; font-size: 1.05rem; border-top: 2px solid #40c664; background: rgba(255,255,255,0.03);"
+        else:
+            style = ""
+
+        return [style] * len(row)
+
+    styler = (
+        display_df.style
+        .format({"total": "{:,.2f}"})
+        .hide(axis="index")
+        .set_table_attributes('class="data-table pl-table"')
+        .apply(row_styles, axis=1)
+    )
+
+    return styler.to_html()
+
+# =============================================
+# End P&L Tables, Styles, Flags, and Form Checklist Functions
 
 def _canon_col(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", str(name).strip().lower())
@@ -901,6 +935,15 @@ def pl_annual(request: Request, token: str):
 
     pl_cat_df = sess["pl_by_cat"].copy()
 
+    COGS_CATEGORIES = {
+        "cost of goods sold",
+        "cogs",
+        "inventory",
+        "materials",
+        "packaging",
+        "direct labor",
+    }
+
     income_df = (
         pl_cat_df[pl_cat_df["type"] == "income"]
         .drop(columns=["type"], errors="ignore")
@@ -908,16 +951,69 @@ def pl_annual(request: Request, token: str):
         .reset_index(drop=True)
     )
 
+    expense_rows = pl_cat_df[pl_cat_df["type"] == "expense"].copy()
+    expense_rows["_category_key"] = (
+        expense_rows["category"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.lower()
+    )
+
+    cogs_df = (
+        expense_rows[expense_rows["_category_key"].isin(COGS_CATEGORIES)]
+        .drop(columns=["type", "_category_key"], errors="ignore")
+        .sort_values(["total", "category"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
+
     expense_df = (
-        pl_cat_df[pl_cat_df["type"] == "expense"]
-        .drop(columns=["type"], errors="ignore")
+        expense_rows[~expense_rows["_category_key"].isin(COGS_CATEGORIES)]
+        .drop(columns=["type", "_category_key"], errors="ignore")
         .sort_values(["total", "category"], ascending=[False, True])
         .reset_index(drop=True)
     )
 
     total_income = round(float(income_df["total"].sum()), 2) if not income_df.empty else 0.0
+    total_cogs = round(float(cogs_df["total"].sum()), 2) if not cogs_df.empty else 0.0
     total_expenses = round(float(expense_df["total"].sum()), 2) if not expense_df.empty else 0.0
-    net_profit = round(total_income - total_expenses, 2)
+
+    gross_profit = round(total_income - total_cogs, 2)
+    net_profit = round(gross_profit - total_expenses, 2)
+
+    income_display = pd.concat(
+        [
+            income_df,
+            pd.DataFrame([{"category": "Total Revenue", "total": total_income}]),
+        ],
+        ignore_index=True,
+    )
+
+    cogs_display = pd.concat(
+        [
+            cogs_df,
+            pd.DataFrame(
+                [
+                    {"category": "Total Cost of Goods Sold", "total": total_cogs},
+                    {"category": "Gross Profit", "total": gross_profit},
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
+
+    expense_display = pd.concat(
+        [
+            expense_df,
+            pd.DataFrame(
+                [
+                    {"category": "Total Expenses", "total": total_expenses},
+                    {"category": "Net Profit", "total": net_profit},
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
 
     return templates.TemplateResponse(
         "pl_annual.html",
@@ -929,9 +1025,14 @@ def pl_annual(request: Request, token: str):
             "nav": "annual",
             "entity_mode": sess["entity_mode"],
             "selected_year": sess.get("selected_year"),
-            "income_table": income_df.to_html(index=False, classes="data-table"),
-            "expense_table": expense_df.to_html(index=False, classes="data-table"),
+            
+            "income_table": _render_pl_table(income_display),
+            "cogs_table": _render_pl_table(cogs_display),
+            "expense_table": _render_pl_table(expense_display),
+            
             "total_income": total_income,
+            "total_cogs": total_cogs,
+            "gross_profit": gross_profit,
             "total_expenses": total_expenses,
             "net_profit": net_profit,
         },

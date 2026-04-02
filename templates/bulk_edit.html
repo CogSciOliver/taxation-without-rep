@@ -1,7 +1,21 @@
+<!--
+# bulk_edit.html WORK IN PROGRESS, author Danii Oliver
+# v3.1.2 DISPLAY: P&L COGS 04.01.2026 23:12 
+-->
+
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Bulk Edit</h2>
+<h2>Bulk Edit v3.1.0</h2>
+Key: For COGs categorization, use keywords like...
+<ul>
+  <li>Cost of Goods Sold</li>
+  <li>COGS</li>
+  <li>Inventory</li>
+  <li>Materials</li>
+  <li>Packaging</li>
+  <li>Direct Labor</li>
+</ul>
 
 <form method="get" action="/bulk-edit">
   <input type="hidden" name="token" value="{{ token }}">
@@ -11,7 +25,7 @@
   <select name="category">
     <option value="">All Categories</option>
     {% for c in categories %}
-    <option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>
+    <option value="{{ c }}" {% if filters.category==c %}selected{% endif %}>
       {{ c }}
     </option>
     {% endfor %}
@@ -43,7 +57,7 @@
         <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=date&dir={% if filters.sort == 'date' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
           Date
           {% if filters.sort == 'date' %}
-            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
           {% endif %}
         </a>
       </th>
@@ -52,7 +66,7 @@
         <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=description&dir={% if filters.sort == 'description' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
           Description
           {% if filters.sort == 'description' %}
-            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
           {% endif %}
         </a>
       </th>
@@ -61,7 +75,7 @@
         <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=amount&dir={% if filters.sort == 'amount' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
           Amount
           {% if filters.sort == 'amount' %}
-            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
           {% endif %}
         </a>
       </th>
@@ -70,7 +84,7 @@
         <a href="/bulk-edit?token={{ token }}&q={{ filters.q }}&category={{ filters.category }}&tx_type={{ filters.tx_type }}&pl_status={{ filters.pl_status }}&month={{ filters.month }}&sort=category&dir={% if filters.sort == 'category' and filters.dir == 'asc' %}desc{% else %}asc{% endif %}">
           Category
           {% if filters.sort == 'category' %}
-            {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
+          {% if filters.dir == 'asc' %}↑{% else %}↓{% endif %}
           {% endif %}
         </a>
       </th>

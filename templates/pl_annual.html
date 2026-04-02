@@ -1,6 +1,6 @@
 <!--
 # pl_annual.html WORK IN PROGRESS, author Danii Oliver
-# v3.1.0 DISPLAY: P&L Order 04.01.2026 23:12 
+# v3.1.2 DISPLAY: P&L COGS 04.02.2026 00:29 
 -->
 
 {% extends "base.html" %}
@@ -14,10 +14,12 @@
 </section>
 
 <section class="card">
-    <h3>Annual Totals</h3>
+    <h3>P&amp;L Summary</h3>
     <ul class="summary-kpis">
         <li><b>Total income:</b> {{ total_income }}</li>
-        <li><b>Total expenses:</b> {{ total_expenses }}</li>
+        <li><b>Cost of Goods Sold:</b> {{ total_cogs }}</li>
+        <li><b>Gross profit:</b> {{ gross_profit }}</li>
+        <li><b>Operating expenses:</b> {{ total_expenses }}</li>
         <li><b>Net profit:</b> {{ net_profit }}</li>
     </ul>
 </section>
@@ -30,7 +32,14 @@
 <p>No income rows found.</p>
 {% endif %}
 
+<h4>Cost of Goods Sold</h4>
+{% if cogs_table %}
+{{ cogs_table|safe }}
+{% else %}
+<p>No cost of goods sold rows found.</p>
+{% endif %}
 
+<hr>
 
 <h3>Expenses</h3>
 {% if expense_table %}

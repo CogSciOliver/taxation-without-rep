@@ -54,9 +54,17 @@ in Summary if multiple years deteched ask which year to use and/or time frame in
 Expose Year Select in the upload flow if multi year is uploaded 
 foundation for full account upload with expense and income and multiple years 
 
+## v later
+standardize your P&L category order and naming, so COGS, operating expenses, and later maybe Other Income / Other Expense display in a fixed order instead of just by amount.
 
+Next after this, the right cleanup is fixed P&L line ordering so expenses display in an accounting order instead of by largest amount.
+
+## v later
+There is also a still-open app-level nav inconsistency: Summary links to /categories, but the sidebar still has no Categories item in base.html.
 
 ============================== Working ===============================
+
+## v3.1.2 - Display: P&L: Total and Bottom Line Styling 
 
 ## v3.1.1 - Display: P&L: Add in COGS for proper P&L Structure 
 
