@@ -3,101 +3,19 @@ pending patch — Full Account Upload with Year selection does not have function
 pending patch - Bulk edit Undo does not have functionality. 
 
 {# 
-03.31.26
-v2.2.0 = local named workspaces with saved editable transaction state
-v2.2.5 = merchant rule persistence layered on top
+v4.0.0 = merchant rule persistence layered on top
  #}
 
-03.31.26 > Stopped work at append imports into existing workspace
 ============================================================
 
-Build this next.
-
-Goal:
-
-user uploads 1+ revenue CSVs
-user uploads 1+ expense CSVs
-app merges them into one named working file
-working file is saved locally
-user can reopen later and continue editing
-
-This is more important than merchant rules because:
-
-it solves real workflow continuity
-it supports partial work across sessions
-it makes the app feel like a real tool, not a one-shot analyzer
-
-What v2.2.0 should become
-New concept: Working File
-
-A working file is your local project file.
-
-It should store:
-
-user-given project name
-raw imported transactions
-edited transaction state
-P&L inclusion state
-cash flow / non-P&L state
-category edits
-selected entity mode
-selected year if applicable
-saved timestamp
-Suggested local storage format
-
-Use a single local JSON file first.
-
-Example:
-data/workspaces/my_2025_tax_work.json
-
-Why JSON first:
-
-easy to inspect
-easy to save/load
-easy to debug
-safer than prematurely building sqlite complexity
-
-You can always move to SQLite later.
-
-v2.2.0 user flow
-Create or open workspace
-
-New landing options:
-
-Create Working File
-Open Working File
-Create Working File
-
-User enters:
-
-workspace name
-entity mode
-optional tax year
-
-Then uploads:
-
-1 or more revenue CSVs
-1 or more expense CSVs
-
-App:
-
-normalizes all files
-tags source file
-combines into one dataframe
-saves locally as that workspace
-Open Working File
-
-User sees list of saved local workspaces.
-Select one.
-Continue editing from last saved state.
-
 ============================================================
-
-
 
 Final P&L Structure I need to be able to Take in Revenue CSV (1 or more) > Save to selected working file for final data pull Take in Expense CSV (1 or more) > Save to selected working file for final data pull = uploading 1 or more files that copy and save to 1 working file (Named by User stored Locally) The Selected file (Named by User stored Locally), needs to be is editable moving income to income section only and expenses to expenses only and removing non-pl items to "cash flow" selection removed from the flagged for P&L edits not deleted forever but saved for cash flow reports much later on. So lets work on saving for later continued work > user edits a bit leaves then comes back, selects a working file to keep working on
 
 ======================== Pending ====================================
+## Later Patch 
+clean duplicate notes/import messaging
+or incomplete upload detection / partial P&L warnings, which is the next trust feature from your earlier app goals
 
 ## Later Patch 
 Change 
@@ -109,9 +27,11 @@ if token not in SESSIONS:
 to return to main landing page = load select workspace page (with last working file as first card) or upload new 
 
 
-## v3.0.0 - Display 
 
-## v3.1.0 - Display: Summary
+
+
+
+## v3.0.0 - Display: Summary
 On the summary page uncategorized is listed as 0 while the results page states 
 expense	Uncategorized	74344.61
 Uncategorized on the summary page is not calculating 
@@ -159,12 +79,21 @@ foundation for full account upload with expense and income and multiple years
 
 
 
-## v2.2.5 Bulk Edit: Save: Merchant, Category, PL Listed, Cash Flow Listed rules learned and saved as part of user's profile 
-save merchant rule, where this becomes dangerously powerful.
+
 
 
 ============================== Working ===============================
-## v2.2.4 Bulk Edit: Save: Import Multiple On Start
+
+=============================== Commited =============================
+
+## v3.0.0 - Display: Summary Uncategorized Display Sum 
+On the summary page uncategorized is listed as 0 while the results page states 
+expense	Uncategorized	74344.61
+Uncategorized on the summary page is not calculating 
+
+## v3.0.0 - Display 
+
+## v2.2.4 Bulk Edit: Save: Import landing page supports mixed, revenue, and expense multi-file imports from start
 Make Upload offer the same CSV sorting for revnues upload , expense upload and keep bank upload for mixed as Add More Data does
 
 test:
@@ -185,7 +114,6 @@ Inside an existing workspace
 Add More Data
 import more revenue/expense later
 
-=============================== Commited =============================
 
 ## v2.2.3 Bulk Edit: Save: Imports (Add More Data and Merge/Save)
 foundation for 1+ revenue and 1+ expense files later

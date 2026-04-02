@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v2.2.4 BULK EDIT:SAVE:IMPORTS 04.01.2026 16:50 
+# v3.0.0 BULK EDIT:SAVE:IMPORTS 04.01.2026 23:12 
 
 from __future__ import annotations
 
@@ -764,8 +764,11 @@ def summary(request: Request, token: str):
 
     uncategorized_count = 0
     if "category" in df.columns:
-        uncategorized_count = int(df["category"].isna().sum() + (df["category"] == "").sum())
-
+        category_series = df["category"].fillna("").astype(str).str.strip()
+        uncategorized_count = int(
+            (category_series == "").sum()
+            + (category_series.str.lower() == "uncategorized").sum()
+        )
     date_col = next(
         (c for c in df.columns if c.lower() in ["date", "transaction_date", "posted_date", "txn_date"]),
         None,
