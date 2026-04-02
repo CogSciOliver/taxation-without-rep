@@ -1,8 +1,43 @@
+<!--
+# pl_annual.html WORK IN PROGRESS, author Danii Oliver
+# v3.1.0 DISPLAY: P&L Order 04.01.2026 23:12 
+-->
+
 {% extends "base.html" %}
 {% block content %}
-<h1>P&L (Annual)</h1>
-<div class="pill">File: {{ filename }}</div>
-<div class="pill">Mode: {{ entity_mode }}</div>
-<h2>By Category (total)</h2>
-{{ pl_cat | safe }}
+
+<section class="page-header">
+    <h1>P&amp;L (Annual)</h1>
+    {% if selected_year %}
+    <p><strong>Working year:</strong> {{ selected_year }}</p>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h3>Annual Totals</h3>
+    <ul class="summary-kpis">
+        <li><b>Total income:</b> {{ total_income }}</li>
+        <li><b>Total expenses:</b> {{ total_expenses }}</li>
+        <li><b>Net profit:</b> {{ net_profit }}</li>
+    </ul>
+</section>
+
+
+<h3>Revenues</h3>
+{% if income_table %}
+{{ income_table|safe }}
+{% else %}
+<p>No income rows found.</p>
+{% endif %}
+
+
+
+<h3>Expenses</h3>
+{% if expense_table %}
+{{ expense_table|safe }}
+{% else %}
+<p>No expense rows found.</p>
+{% endif %}
+
+
 {% endblock %}

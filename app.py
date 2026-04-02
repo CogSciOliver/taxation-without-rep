@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v3.0.0 DISPLAY: SUMMARY 04.01.2026 23:12 
+# v3.1.0 DISPLAY: P&L Order 04.01.2026 23:12 
 
 from __future__ import annotations
 
@@ -899,6 +899,26 @@ def pl_annual(request: Request, token: str):
     if sess.get("stage") == "awaiting_year_selection":
         return RedirectResponse(f"/year-select?token={token}", status_code=303)
 
+    pl_cat_df = sess["pl_by_cat"].copy()
+
+    income_df = (
+        pl_cat_df[pl_cat_df["type"] == "income"]
+        .drop(columns=["type"], errors="ignore")
+        .sort_values(["total", "category"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
+
+    expense_df = (
+        pl_cat_df[pl_cat_df["type"] == "expense"]
+        .drop(columns=["type"], errors="ignore")
+        .sort_values(["total", "category"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
+
+    total_income = round(float(income_df["total"].sum()), 2) if not income_df.empty else 0.0
+    total_expenses = round(float(expense_df["total"].sum()), 2) if not expense_df.empty else 0.0
+    net_profit = round(total_income - total_expenses, 2)
+
     return templates.TemplateResponse(
         "pl_annual.html",
         {
@@ -907,9 +927,13 @@ def pl_annual(request: Request, token: str):
             "workspace_name": sess.get("workspace_name"),
             "filename": sess.get("filename"),
             "nav": "annual",
-            "pl_cat": sess["pl_by_cat"].to_html(index=False),
             "entity_mode": sess["entity_mode"],
             "selected_year": sess.get("selected_year"),
+            "income_table": income_df.to_html(index=False, classes="data-table"),
+            "expense_table": expense_df.to_html(index=False, classes="data-table"),
+            "total_income": total_income,
+            "total_expenses": total_expenses,
+            "net_profit": net_profit,
         },
     )
 

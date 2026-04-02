@@ -28,16 +28,6 @@ to return to main landing page = load select workspace page (with last working f
 
 
 
-
-
-
-
-
-## v3.2.0 - Display: P&L: Format & Display
-Income Should display above Expenses
-Income should be its own table 
-Expenses should be its own table 
-
 ## v3.3.0 - Display: Tables: Duplicate Warning 
 dedupe or separate import notes display.
 
@@ -68,11 +58,18 @@ foundation for full account upload with expense and income and multiple years
 
 ============================== Working ===============================
 
+## v3.1.1 - Display: P&L: Add in COGS for proper P&L Structure 
 
-## v3.0.1 - Display: Summary visible uncategorized section for review and edits
+## v3.1.0 - Display: P&L: Format & Display
+Income Should display above Expenses
+Income should be its own table 
+Expenses should be its own table 
+
 
 
 =============================== Commited =============================
+
+## v3.0.1 - Display: Summary visible uncategorized section for review and edits
 
 ## v3.0.0 - Display: Summary Uncategorized Display Sum 
 On the summary page uncategorized is listed as 0 while the results page states 
