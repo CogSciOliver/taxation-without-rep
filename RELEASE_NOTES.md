@@ -60,13 +60,17 @@ standardize your P&L category order and naming, so COGS, operating expenses, and
 Next after this, the right cleanup is fixed P&L line ordering so expenses display in an accounting order instead of by largest amount.
 
 ## v later
-There is also a still-open app-level nav inconsistency: Summary links to /categories, but the sidebar still has no Categories item in base.html.
-
-## v later
 “rows with zero totals” you mean a real fixed statement like:
 a full canonical zero-filled P&L layout
+
 ============================== Working ===============================
 
+STOPPED WORKING AT A. Add a dedicated route in app.py
+
+## v3.2.0 Display: Nav + Workflow
+App-level nav now consistency displays: Summary links to /categories, and the sidebar now Categories item in base.html.
+
+also when I click uncategorized in results, summary, pl_annual, flags I want it to take me to a page with all the uncategorized to edit with proper category and not show there once categorized like checking off the work completed and only seeing what still needs to be done 
 
 =============================== Commited =============================
 
