@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v3.0.0 BULK EDIT:SAVE:IMPORTS 04.01.2026 23:12 
+# v3.0.0 DISPLAY: SUMMARY 04.01.2026 23:12 
 
 from __future__ import annotations
 

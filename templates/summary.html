@@ -1,4 +1,7 @@
-<!-- v2.2.2 WORK IN PROGRESS 04.01.2026 12:34, author Danii Oliver  -->
+<!--
+# summary.html WORK IN PROGRESS, author Danii Oliver
+# v3.0.1 DISPLAY: SUMMARY 04.01.2026 23:12 
+-->
 
 {% extends "base.html" %}
 {% block content %}
@@ -44,20 +47,21 @@
     <a href="/results?token={{ token }}">Everything At A Glance</a>
     <a href="/export.xlsx?token={{ token }}">Export Excel</a>
   </div>
+</section>
 
-
-
+<section class="card summary-card">
   {% if kpis.flag_count and kpis.flag_count > 0 %}
   <h3 class="section-heading">Flags</h3>
   <p>You have <b>{{ kpis.flag_count }}</b> items to review.</p>
   <a href="/flags?token={{ token }}">Review Flags</a>
   {% endif %}
+</section>
 
+<section class="card summary-card">
   {% if kpis.uncategorized_count > 0 %}
   <h3 class="section-heading">Uncategorized</h3>
-  {# <p>You have <b>{{ kpis.uncategorized_count }}</b> items to edit.</p>
-  <a href="/uncategorized?token={{ token }}">Review Uncategorized</a> #}
-  {# Save for later to create an editor //uncategorizedEditor #}
+  <p>You have <b>{{ kpis.uncategorized_count }}</b> uncategorized items to review.</p>
+  <a href="/bulk-edit?token={{ token }}&category=Uncategorized">Review Uncategorized</a>
   {% endif %}
 </section>
 

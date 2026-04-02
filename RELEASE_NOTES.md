@@ -31,19 +31,7 @@ to return to main landing page = load select workspace page (with last working f
 
 
 
-## v3.0.0 - Display: Summary
-On the summary page uncategorized is listed as 0 while the results page states 
-expense	Uncategorized	74344.61
-Uncategorized on the summary page is not calculating 
 
-also this block in summary page not working 
-
-  {% if kpis.uncategorized_count > 0 %}
-  <h3 class="section-heading">Uncategorized</h3>
-  {# <p>You have <b>{{ kpis.uncategorized_count }}</b> items to edit.</p>
-  <a href="/uncategorized?token={{ token }}">Review Uncategorized</a> #}
-  {# Save for later to create an editor //uncategorizedEditor #}
-  {% endif %}
 
 ## v3.2.0 - Display: P&L: Format & Display
 Income Should display above Expenses
@@ -78,11 +66,11 @@ foundation for full account upload with expense and income and multiple years
 
 
 
-
-
-
-
 ============================== Working ===============================
+
+
+## v3.0.1 - Display: Summary visible uncategorized section for review and edits
+
 
 =============================== Commited =============================
 
