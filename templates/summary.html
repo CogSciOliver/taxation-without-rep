@@ -1,6 +1,6 @@
 <!--
 # summary.html WORK IN PROGRESS, author Danii Oliver
-# v3.0.1 DISPLAY: SUMMARY 04.01.2026 23:12 
+# v3.2.1 DISPLAY: Categories 04.04.2026 10:29 
 -->
 
 {% extends "base.html" %}
@@ -32,18 +32,19 @@
     <li><b>Total expenses:</b> {{ kpis.total_expenses }}</li>
     <li><b>Net profit:</b> {{ kpis.net_profit }}</li>
     <li><b>Transactions:</b> {{ kpis.txn_count }}</li>
-    <li><b>Uncategorized:</b> {{ kpis.uncategorized_count }}</li>
+    <li><a href="/uncategorized?token={{ token }}">Uncategorized</a> {{ kpis.uncategorized_count }}</li>
     <li><b>Date range:</b> {{ kpis.date_min }} → {{ kpis.date_max }}</li>
     <li><b>Months covered:</b> {{ kpis.months_covered }}</li>
   </ul>
 
   <h3 class="section-heading">Go to reports</h3>
   <div class="summary-links">
+    <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
     <a href="/pl/monthly?token={{ token }}">View Monthly P&amp;L</a>
     <a href="/pl/annual?token={{ token }}">View Annual P&amp;L</a>
     <a href="/flags?token={{ token }}">Review Flags</a>
     <a href="/non-pl?token={{ token }}">Non-P&amp;L</a>
-    <a href="/categories?token={{ token }}">Review Categories</a>
+    <a href="/categories?token={{ token }}">Review All Categories</a>
     <a href="/results?token={{ token }}">Everything At A Glance</a>
     <a href="/export.xlsx?token={{ token }}">Export Excel</a>
   </div>
@@ -61,7 +62,7 @@
   {% if kpis.uncategorized_count > 0 %}
   <h3 class="section-heading">Uncategorized</h3>
   <p>You have <b>{{ kpis.uncategorized_count }}</b> uncategorized items to review.</p>
-  <a href="/bulk-edit?token={{ token }}&category=Uncategorized">Review Uncategorized</a>
+  <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
   {% endif %}
 </section>
 

@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v3.1.2 DISPLAY: P&L COGS 04.02.2026 00:29 
+# v3.2.1 DISPLAY: Categories 04.02.2026 08:54 
 
 from __future__ import annotations
 
@@ -29,10 +29,10 @@ from pipeline import (
 from tax_updates import fetch_tax_updates, IRS_UPDATES_SOURCES
 from pathlib import Path
 from datetime import datetime
+from starlette.requests import Request
 
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 # Simple in-memory store for prototype.
@@ -68,8 +68,74 @@ DESCRIPTION_ALIASES = {
     "transaction_description",
 }
 
+STANDARD_PL_STRUCTURE = {
+    "income": [
+        "Sales",
+        "Service Income",
+        "Other Income",
+    ],
+    "expense": [
+        "Advertising",
+        "Bank Fees",
+        "Car & Truck",
+        "Commissions & Fees",
+        "Contract Labor",
+        "Cost of Goods Sold",
+        "Direct Labor",
+        "Furniture, Fixtures, and Equipment",
+        "Insurance",
+        "Interest",
+        "Inventory",
+        "Legal & Professional",
+        "Materials",
+        "Meals",
+        "Office and Operational",
+        "Other",
+        "Packaging",
+        "Personnel Costs",
+        "Professional Fees",
+        "Rent/Lease",
+        "Repairs & Maintenance",
+        "Startup Costs",
+        "Supplies",
+        "Taxes & Licenses",
+        "Travel and Vehicles",
+        "Uncategorized",
+        "Utilities",
+    ],
+}
+
 WORKSPACES_DIR = Path("data/workspaces")
 WORKSPACES_DIR.mkdir(parents=True, exist_ok=True)
+
+def _get_uncategorized_count(df: pd.DataFrame) -> int:
+    if "category" not in df.columns:
+        return 0
+
+    category_series = df["category"].fillna("").astype(str).str.strip()
+    return int(
+        (category_series == "").sum()
+        + (category_series.str.lower() == "uncategorized").sum()
+    )
+
+def template_shared_context(request: Request) -> dict:
+    token = request.query_params.get("token")
+    uncategorized_count = 0
+
+    if token and token in SESSIONS:
+        sess = SESSIONS[token]
+        df = sess.get("df")
+        if isinstance(df, pd.DataFrame):
+            uncategorized_count = _get_uncategorized_count(df)
+
+    return {
+        "nav_uncategorized_count": uncategorized_count,
+    }
+
+templates = Jinja2Templates(
+    directory="templates",
+    context_processors=[template_shared_context],
+)
 
 # Create and Save Local Workspace Functions
 # =============================================
@@ -477,6 +543,17 @@ def _undo_last_bulk_edit(token: str) -> bool:
     s["df"] = stack.pop()
     _rebuild_session_outputs(token)
     return True
+
+
+def _get_uncategorized_count(df: pd.DataFrame) -> int:
+    if "category" not in df.columns:
+        return 0
+
+    category_series = df["category"].fillna("").astype(str).str.strip()
+    return int(
+        (category_series == "").sum()
+        + (category_series.str.lower() == "uncategorized").sum()
+    )
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -1108,8 +1185,7 @@ def non_pl_page(request: Request, token: str):
         },
     )
 
-@app.get("/categories", response_class=HTMLResponse)
-def categories_page(request: Request, token: str):
+
     if token not in SESSIONS:
         return HTMLResponse("Session expired. Re-upload.", status_code=404)
 
@@ -1128,6 +1204,73 @@ def categories_page(request: Request, token: str):
             "pl_cat": sess["pl_by_cat"].to_html(index=False),
         },
     )
+
+
+
+@app.get("/categories", response_class=HTMLResponse)
+def categories_page(request: Request, token: str):
+    if token not in SESSIONS:
+        return HTMLResponse("Session expired. Re-upload.", status_code=404)
+
+    sess = SESSIONS[token]
+    if sess.get("stage") == "awaiting_year_selection":
+        return RedirectResponse(f"/year-select?token={token}", status_code=303)
+
+    df = sess["df"].copy()
+    pl_view = df[df["is_pl_item"] == True].copy()
+    pl_view["type"] = pl_view["amount"].apply(lambda x: "income" if x > 0 else "expense")
+    pl_view["abs_amount"] = pl_view["amount"].abs()
+
+    grouped = (
+        pl_view.groupby(["type", "category"], as_index=False)["abs_amount"]
+        .sum()
+        .rename(columns={"abs_amount": "total"})
+    )
+
+    totals_map = {
+        (row["type"], row["category"]): float(row["total"])
+        for _, row in grouped.iterrows()
+    }
+
+    existing_by_type = {
+        "income": sorted(
+            grouped.loc[grouped["type"] == "income", "category"].dropna().astype(str).unique(),
+            key=str.lower,
+        ),
+        "expense": sorted(
+            grouped.loc[grouped["type"] == "expense", "category"].dropna().astype(str).unique(),
+            key=str.lower,
+        ),
+    }
+
+    rows = []
+    for tx_type in ["income", "expense"]:
+        category_names = sorted(
+            set(STANDARD_PL_STRUCTURE.get(tx_type, [])) | set(existing_by_type.get(tx_type, [])),
+            key=str.lower,
+        )
+        for category in category_names:
+            rows.append(
+                {
+                    "type": tx_type,
+                    "category": category,
+                    "total": round(float(totals_map.get((tx_type, category), 0.0)), 2),
+                }
+            )
+
+    return templates.TemplateResponse(
+        "categories.html",
+        {
+            "request": request,
+            "token": token,
+            "workspace_name": sess.get("workspace_name"),
+            "filename": sess.get("filename"),
+            "nav": "categories",
+            "selected_year": sess.get("selected_year"),
+            "rows": rows,
+        },
+    )
+
 
 @app.get("/bulk-edit", response_class=HTMLResponse)
 def bulk_edit_page(
@@ -1225,11 +1368,32 @@ async def bulk_edit_apply(
     action: str = Form(...),
     selected_ids: list[str] = Form([]),
     new_category: str = Form(""),
+    q: str = Form(""),
+    category: str = Form(""),
+    tx_type: str = Form(""),
+    pl_status: str = Form(""),
+    month: str = Form(""),
+    sort: str = Form("date"),
+    dir: str = Form("desc"),
+    return_to: str = Form("bulk_edit"),
 ):
     if token not in SESSIONS:
         return HTMLResponse("Session expired.", status_code=404)
 
-    s = SESSIONS[token]
+    sess = SESSIONS[token]
+
+    def _return_url():
+        base = "/uncategorized" if return_to == "uncategorized" else "/bulk-edit"
+        return (
+            f"{base}?token={token}"
+            f"&q={q}"
+            f"&category={category}"
+            f"&tx_type={tx_type}"
+            f"&pl_status={pl_status}"
+            f"&month={month}"
+            f"&sort={sort}"
+            f"&dir={dir}"
+        )
 
     if action == "undo":
         _undo_last_bulk_edit(token)
@@ -1238,7 +1402,7 @@ async def bulk_edit_apply(
     if not selected_ids:
         return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
 
-    df = s["df"].copy()
+    df = sess["df"].copy()
     _push_undo_snapshot(token)
 
     mask = df["_row_id"].astype(str).isin(selected_ids)
@@ -1256,14 +1420,35 @@ async def bulk_edit_apply(
         df.loc[mask, "is_pl_item"] = False
         df.loc[mask, "non_pl_reason"] = "User marked non-P&L"
 
-    s["df"] = df
+    sess["df"] = df
     _rebuild_session_outputs(token)
 
-    workspace_name = s.get("workspace_name")
+    workspace_name = sess.get("workspace_name")
     if workspace_name:
-        save_workspace(workspace_name, s)
+        save_workspace(workspace_name, sess)
 
-    return RedirectResponse(f"/bulk-edit?token={token}", status_code=303)
+    return RedirectResponse(_return_url(), status_code=303)
+
+
+@app.get("/uncategorized", response_class=HTMLResponse)
+def uncategorized_page(
+    request: Request,
+    token: str,
+    q: str = "",
+    tx_type: str = "",
+    pl_status: str = "",
+    month: str = "",
+):
+    return bulk_edit_page(
+        request=request,
+        token=token,
+        q=q,
+        category="Uncategorized",
+        tx_type=tx_type,
+        pl_status=pl_status,
+        month=month,
+    )
+
 
 # NEW V2.0.0 FEATURE ROUTES START HERE
 

@@ -6,8 +6,13 @@
     <h1 style="margin:0;">Results</h1>
     <span class="pill">File: {{ filename }}</span>
     <span class="pill">Mode: {{ entity_mode }}</span>
-    <a class="pill" href="/export.xlsx?token={{ token }}">Download Excel export</a>
-    <a class="pill" href="/">Upload another</a>
+  </div>
+  <hr>
+  <div class="summary-links">
+    <h2 style="margin:5px;">Actions:</h2>
+    <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
+    <a href="/">Upload Another CSV</a>
+    <a href="/export.xlsx?token={{ token }}">Download Excel export</a>
   </div>
 
   <h2>P&L by Category (P&L items only)</h2>

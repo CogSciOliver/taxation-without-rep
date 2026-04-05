@@ -1,6 +1,6 @@
 <!--
 # bulk_edit.html WORK IN PROGRESS, author Danii Oliver
-# v3.1.2 DISPLAY: P&L COGS 04.01.2026 23:12 
+# v3.2.1 DISPLAY: Categories 04.02.2026 08:54 
 -->
 
 {% extends "base.html" %}
@@ -16,6 +16,8 @@ Key: For COGs categorization, use keywords like...
   <li>Packaging</li>
   <li>Direct Labor</li>
 </ul>
+
+<a class="pill" href="/uncategorized?token={{ token }}">Review Uncategorized</a>
 
 <form method="get" action="/bulk-edit">
   <input type="hidden" name="token" value="{{ token }}">
@@ -35,7 +37,17 @@ Key: For COGs categorization, use keywords like...
 </form>
 
 <form method="post" action="/bulk-edit/apply">
+
   <input type="hidden" name="token" value="{{ token }}">
+  <input type="hidden" name="q" value="{{ filters.q }}">
+  <input type="hidden" name="category" value="{{ filters.category }}">
+  <input type="hidden" name="tx_type" value="{{ filters.tx_type }}">
+  <input type="hidden" name="pl_status" value="{{ filters.pl_status }}">
+  <input type="hidden" name="month" value="{{ filters.month }}">
+  <input type="hidden" name="sort" value="{{ filters.sort }}">
+  <input type="hidden" name="dir" value="{{ filters.dir }}">
+  <input type="hidden" name="return_to" value="{{ 'uncategorized' if filters.category == 'Uncategorized' else 'bulk_edit' }}">
+
 
   <select name="action">
     <option value="set_category">Set Category</option>

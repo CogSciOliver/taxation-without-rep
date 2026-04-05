@@ -1,6 +1,6 @@
 <!--
 # pl_annual.html WORK IN PROGRESS, author Danii Oliver
-# v3.1.2 DISPLAY: P&L COGS 04.02.2026 00:29 
+# v3.2.1 DISPLAY: Categories 04.04.2026 10:29 
 -->
 
 {% extends "base.html" %}
@@ -22,6 +22,8 @@
         <li><b>Operating expenses:</b> {{ total_expenses }}</li>
         <li><b>Net profit:</b> {{ net_profit }}</li>
     </ul>
+    <a class="button-primary" href="/uncategorized?token={{ token }}">Review Uncategorized</a>
+
 </section>
 
 

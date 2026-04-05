@@ -1,6 +1,6 @@
 <!--
 # base.html WORK IN PROGRESS, author Danii Oliver
-# v3.2.0 DISPLAY: P&L Nav Categories 04.02.2026 00:29 
+# v3.2.1 DISPLAY: Categories 04.04.2026 10:29 
 -->
 
 <!doctype html>
@@ -10,7 +10,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ title or "TaxPL" }}</title>
-  <link rel="stylesheet" href="/assets/css/template.css" />
+  <link rel="stylesheet" href="/assets/css/app.css" />
 </head>
 
 <body>
@@ -24,6 +24,7 @@
       {% if token %}
       <hr class="sidebar-divider" />
       <a href="/summary?token={{ token }}" class="{{ 'active' if nav=='summary' else '' }}">Summary</a>
+      <a href="/uncategorized?token={{ token }}" class="{{ 'active' if nav=='uncategorized' else '' }}">Uncategorized{% if nav_uncategorized_count > 0 %} ({{ nav_uncategorized_count }}){% endif %}</a>
       <a href="/results?token={{ token }}" class="{{ 'active' if nav=='results' else '' }}">Results (All)</a>
       <a href="/workspace/import?token={{ token }}" class="{{ 'active' if nav=='workspace_import' else '' }}">Add More Data</a>
       <a href="/bulk-edit?token={{ token }}" class="{% if nav == 'bulk_edit' %}active{% endif %}">Bulk Edit</a>

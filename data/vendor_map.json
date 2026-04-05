@@ -1,7 +1,20 @@
 {
-  "AMAZON": "Software & Subscriptions",
+  "AMAZON": "Supplies",
+  "Amazon Prime Membership": "Software/Subscriptions",
+  "Amazon Web Services": "Software/Subscriptions",
+  "Amazon Kids+": "Software/Subscriptions",
+  "Netflix": "Software/Subscriptions",
+  "YouTube Music": "Software/Subscriptions",
   "OFFICE DEPOT": "Office",
-  "HOME DEPOT": "Repairs & Maintenance",
-  "Lowe's": "Repairs & Maintenance",
-  "GUSTO": "Payroll/Withholding"
+  "Telsa": "Repairs & Maintenance",
+  "Tesla Motors": "Repairs & Maintenance",
+  "HOME DEPOT": "Materials",
+  "Lowe's": "Materials",
+  "GUSTO": "Payroll/Withholding",
+  "Xbox Game Pass Ultimate": "Software/Subscriptions",
+  "Hobby Lobby": "Materials",
+  "Walmart": "Supplies",
+  "Target": "Supplies",
+  "Michael's": "Materials",
+  "Specs Wines, Spirits, & Finer Foods": "Supplies"
 }
