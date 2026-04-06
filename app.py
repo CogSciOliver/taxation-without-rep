@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v3.2.1 DISPLAY: Categories 04.02.2026 08:54 
+# v3.3.0 Display: Branding Update 04.02.2026 08:54 
 
 from __future__ import annotations
 
