@@ -1,0 +1,289 @@
+body {
+    font-family: var(--font-sans);
+    margin: 0;
+    color: var(--text-main);
+    background-color: var(--app-bg);
+    background-image: var(--app-bg-gradient);
+    background-repeat: no-repeat;
+    background-size: 100vw 100vh;
+    background-attachment: fixed;
+    line-height: var(--line-normal);
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+a {
+    color: var(--accent-main);
+}
+
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-8);
+    overflow-x: auto;
+    background: transparent;
+}
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: var(--space-3) 0 var(--space-8) 0;
+    font-size: var(--text-sm);
+    background: var(--surface-2);
+}
+
+th,
+td {
+    border: 1px solid var(--border-main);
+    padding: var(--space-2) var(--space-3);
+    text-align: left;
+    vertical-align: top;
+}
+
+td {
+    font-weight: 300;
+    color: var(--text-main);
+}
+
+th {
+    background: var(--surface-3);
+}
+
+th a {
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+tr:nth-of-type(odd) {
+    background-color: var(--app-bg);
+}
+
+tr:nth-of-type(even) {
+    background-color: var(--surface-3);
+}
+
+/* General UI */
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-5);
+}
+
+.pill {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+    border: 1px solid var(--border-main);
+    background: var(--surface-3);
+    color: var(--text-main);
+}
+
+button {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--border-main);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-4);
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--accent-pressed);
+}
+
+/* Upload Index Display */
+.page-header {
+    margin-bottom: var(--space-5);
+}
+
+.upload-card {
+    margin-bottom: var(--space-8);
+}
+
+.alert {
+    padding: var(--space-3);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-4);
+}
+
+.alert-error {
+    border: 1px solid var(--color-danger);
+    color: var(--alert-error-text);
+    background-color: var(--alert-error-bg);
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.field-help {
+    display: block;
+}
+
+.form-actions {
+    margin-top: var(--space-3);
+}
+
+/* IRS Tools */
+.sources-section {
+    margin-top: var(--space-12);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--border-main);
+    opacity: 0.9;
+    font-size: var(--text-sm);
+}
+
+.sources-section h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+}
+
+.sources-list {
+    padding-left: var(--space-5);
+    margin: 0;
+}
+
+.sources-list li {
+    margin-bottom: var(--space-2);
+}
+
+/* Summary Display */
+.summary-card {
+    max-width: 860px;
+}
+
+.summary-year {
+    margin-bottom: var(--space-3);
+}
+
+.alert-note {
+    border: 1px solid var(--border-main);
+}
+
+.summary-kpis {
+    padding-left: var(--space-5);
+}
+
+.section-heading {
+    margin-top: var(--space-4);
+}
+
+.summary-links {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.summary-links a {
+    display: inline-block;
+    padding: var(--space-3) var(--space-3);
+    border: 1px solid var(--border-main);
+    border-radius: var(--radius-sm);
+    background: var(--surface-1);
+    text-decoration: none;
+}
+
+.summary-links a:hover {
+    background: var(--surface-2);
+}
+
+/* Year Select Display */
+.year-select-page {
+    max-width: 760px;
+}
+
+.year-select-form {
+    margin-top: var(--space-4);
+}
+
+.year-select-input {
+    display: block;
+    margin: var(--space-2) 0 var(--space-5);
+    padding: var(--space-3);
+    min-width: 220px;
+}
+
+.back-link-row {
+    margin-top: var(--space-6);
+}
+
+select,
+input[type="file"],
+button {
+    font: inherit;
+}
+
+select,
+input[type="file"] {
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3) var(--space-3);
+}
+
+/* Sidebar Display */
+.site-title {
+    margin-top: 0;
+    font-family: var(--font-sans);
+}
+
+.sidebar-divider {
+    margin: var(--space-3) 0;
+    border: 0;
+    border-top: 1px solid var(--border-main);
+}
+
+.sidebar {
+    width: 240px;
+    padding: var(--space-4);
+    border-right: 1px solid var(--border-main);
+    background: var(--sidebar-bg);
+    background-attachment: fixed;
+}
+
+.sidebar a {
+    display: block;
+    padding: var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    text-decoration: none;
+    margin-bottom: var(--space-1);
+}
+
+.sidebar a:hover {
+    background: var(--surface-2);
+}
+
+.sidebar a.active {
+    background: var(--sidebar-active-bg);
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.pl-row-total td {
+    font-weight: 700;
+    border-top: 2px solid var(--accent-main);
+}
+
+.pl-row-final td {
+    font-weight: 900;
+    border-top: 5px double var(--accent-hover);
+    border-bottom: 5px double var(--border-main);
+    background: var(--surface-2);
+}

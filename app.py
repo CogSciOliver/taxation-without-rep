@@ -13,6 +13,7 @@ from fastapi import FastAPI, UploadFile, File, Request, Form
 from fastapi.responses import HTMLResponse, StreamingResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from html import escape
 
 from pipeline import (
     normalize_bank_csv,
@@ -240,27 +241,38 @@ def _render_pl_table(df: pd.DataFrame) -> str:
 
     display_df = df.copy()
 
-    def row_styles(row):
-        label = str(row.get("category", "")).strip().lower()
+    def tr_class(label: str) -> str:
+        label = str(label).strip().lower()
 
         if label in {"gross profit", "net profit"}:
-            style = "color: #f5f5f5; font-family: serif; font-weight: 800; font-size: 1.05rem; border-top: 3px double #999; border-bottom: 3px double #999; background: rgba(255,255,255,0.06);"
-        elif label.startswith("total "):
-            style = "color: #f5f5f5; font-family: serif; font-weight: 700; font-size: 1.05rem; border-top: 2px solid #40c664; background: rgba(255,255,255,0.03);"
-        else:
-            style = ""
+            return "pl-row-final"
+        if label.startswith("total "):
+            return "pl-row-total"
+        return ""
 
-        return [style] * len(row)
+    rows = []
+    for _, row in display_df.iterrows():
+        row_class = tr_class(row.get("category", ""))
+        category = escape(str(row.get("category", "")))
+        total = f"{float(row.get('total', 0)):,.2f}"
 
-    styler = (
-        display_df.style
-        .format({"total": "{:,.2f}"})
-        .hide(axis="index")
-        .set_table_attributes('class="data-table pl-table"')
-        .apply(row_styles, axis=1)
+        rows.append(
+            f'<tr class="{row_class}">'
+            f"<td>{category}</td>"
+            f"<td>{total}</td>"
+            f"</tr>"
+        )
+
+    return (
+        '<table class="data-table pl-table">'
+        "<thead>"
+        "<tr><th>Category</th><th>Total</th></tr>"
+        "</thead>"
+        "<tbody>"
+        + "".join(rows) +
+        "</tbody>"
+        "</table>"
     )
-
-    return styler.to_html()
 
 # =============================================
 # End P&L Tables, Styles, Flags, and Form Checklist Functions

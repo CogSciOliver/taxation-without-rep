@@ -119,4 +119,23 @@
   --card-bg: var(--surface-2);
   --card-border: var(--border-soft);
   --card-shadow: var(--shadow-md);
+
+  /* ===== Gradient Tokens ===== */
+
+  --app-bg-gradient:
+    radial-gradient(circle at top right, rgba(242, 108, 58, 0.10), transparent 28%),
+    linear-gradient(180deg, var(--color-bg-app) 0%, var(--color-bg-elevated) 100%);
+
+  --sidebar-bg:
+    linear-gradient(180deg, rgba(242, 108, 58, 0.08) 0%, rgba(242, 108, 58, 0) 140px),
+    var(--surface-1);
+
+  --sidebar-active-bg: rgba(242, 108, 58, 0.14);
+
+  --table-row-odd: rgba(255, 255, 255, 0.01);
+  --table-row-even: rgba(255, 255, 255, 0.03);
+
+  --alert-error-bg: rgba(232, 90, 54, 0.14);
+  --alert-error-text: var(--color-text-primary);
+
 }
