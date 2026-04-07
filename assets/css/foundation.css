@@ -1,3 +1,8 @@
+html,
+body {
+    height: 100%;
+}
+
 body {
     font-family: var(--font-sans);
     margin: 0;
@@ -8,21 +13,54 @@ body {
     background-size: 100vw 100vh;
     background-attachment: fixed;
     line-height: var(--line-normal);
+
+    overflow: hidden;
 }
 
 .layout {
     display: flex;
+    height: 100vh;
     min-height: 100vh;
+}
+
+.badge {
+    position: absolute;
+    top: var(--space-4);
+    left: var(--space-4);
+    width: 48px;
+    height: 48px;
+}
+.logo {
+    position: absolute;
+    top: var(--space-4);
+    left: calc(var(--space-4) + 60px);
+    width: 120px;
+    height: auto;
 }
 
 a {
     color: var(--accent-main);
 }
 
+h1,
+h2,h3,
+h4,h5,
+h6 {
+    font-family: var(--font-display);
+    color: var(--text-main);
+    margin-top: 0;
+    margin-bottom: var(--space-4);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
 .content {
     flex: 1;
     min-width: 0;
+    height: 100vh;
     padding: var(--space-8);
+    box-sizing: border-box;
+    overflow-y: auto;
     overflow-x: auto;
     background: transparent;
 }
@@ -46,6 +84,7 @@ td {
 
 td {
     font-weight: 300;
+    letter-spacing: 1px;
     color: var(--text-main);
 }
 
@@ -250,12 +289,18 @@ input[type="file"] {
 }
 
 .sidebar {
+    flex: 0 0 240px;
     width: 240px;
+    height: 100vh;
     padding: var(--space-4);
+    box-sizing: border-box;
     border-right: 1px solid var(--border-main);
     background: var(--sidebar-bg);
     background-attachment: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
+
 
 .sidebar a {
     display: block;

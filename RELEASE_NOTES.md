@@ -34,21 +34,7 @@ to return to main landing page = load select workspace page (with last working f
 dedupe or separate import notes display.
 
 
-## v3.3.1 - Display: Tables: Collapse Table 
-Show Icon to Open table display 
-Table Name 
-TH 
-3 rows ...
-when closed 
 
-Show Icon to Close table display 
-Table Name 
-TH 
-ALL rows
-when open 
-
-## v3.3.2 - Display: Tables: Sorting 
-Flags, Non-P&L <th> Sort 
 
 
 ## v3.4.0 - Display: Year Select 
@@ -65,22 +51,42 @@ Next after this, the right cleanup is fixed P&L line ordering so expenses displa
 “rows with zero totals” you mean a real fixed statement like:
 a full canonical zero-filled P&L layout
 
-## v later
-ok now lets apply the new branding
+
+
+============================== Up Next ===============================
+
+
+## v3.5.0 - Display: Tables: Collapse Table 
+Show Icon to Open table display 
+Table Name 
+TH 
+3 rows ...
+when closed 
+
+Show Icon to Close table display 
+Table Name 
+TH 
+ALL rows
+when open 
+
+## v3.5.1 - Display: Tables: Sorting 
+Flags, Non-P&L <th> Sort 
 
 ============================== Working ===============================
 
+## v3.4.0 - Display: Sidebar Fixed 
+Sidebar should be fixed and scroll separately only if needed 
 
-## v3.3.0 Display: Branding Update
-ok now lets apply the new branding
 
 =============================== Commited =============================
+
+## v3.3.1 Display: Branding Update
+## v3.3.0 Display: Branding Update
+ok now lets apply the new branding
 
 ## v3.2.1 Display: Nav + Workflow: Categories
 Click uncategorized in results, summary, pl_annual, take to a page with all the uncategorized to edit with proper category and not show there once categorized like checking off the work completed and only seeing what still needs to be done 
 Page for all cat
-
-
 
 ## v3.2.0 Display: Nav + Workflow
 App-level nav now consistency displays: Summary links to /categories, and the sidebar now Categories item in base.html.

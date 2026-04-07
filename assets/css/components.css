@@ -1,0 +1,199 @@
+.td {
+    /* This class is for testing table cell text styling in the style guide. It is not used in the app. */
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: var(--text-main);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-ghost,
+.btn-raised,
+.btn-gradient {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease,
+        transform 80ms ease;
+}
+
+a.btn-primary,
+a.btn-secondary,
+a.btn-outline,
+a.btn-ghost,
+a.btn-raised,
+a.btn-gradient {
+    text-decoration: none;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-outline:focus-visible,
+.btn-ghost:focus-visible,
+.btn-raised:focus-visible,
+.btn-gradient:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--app-bg), 0 0 0 4px rgba(242, 108, 58, 0.45);
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-outline:active,
+.btn-ghost:active,
+.btn-raised:active,
+.btn-gradient:active {
+    transform: translateY(1px);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-outline:disabled,
+.btn-ghost:disabled,
+.btn-raised:disabled,
+.btn-gradient:disabled,
+.btn-primary[aria-disabled="true"],
+.btn-secondary[aria-disabled="true"],
+.btn-outline[aria-disabled="true"],
+.btn-ghost[aria-disabled="true"],
+.btn-raised[aria-disabled="true"],
+.btn-gradient[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-color: var(--btn-primary-bg);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: var(--btn-primary-text);
+}
+
+.btn-primary:active {
+    background: var(--accent-pressed);
+    border-color: var(--accent-pressed);
+}
+
+.btn-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border-color: var(--border-main);
+}
+
+.btn-secondary:hover {
+    background: var(--surface-3);
+    border-color: var(--border-main);
+    color: var(--text-main);
+}
+
+.btn-secondary:active {
+    background: var(--surface-1);
+    border-color: var(--accent-pressed);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--accent-main);
+    border-color: var(--accent-main);
+}
+
+.btn-outline:hover {
+    background: rgba(242, 108, 58, 0.10);
+    color: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+.btn-outline:active {
+    background: rgba(242, 108, 58, 0.16);
+    color: var(--accent-pressed);
+    border-color: var(--accent-pressed);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-main);
+    border-color: transparent;
+}
+
+.btn-ghost:hover {
+    background: var(--surface-2);
+    color: var(--text-main);
+    border-color: transparent;
+}
+
+.btn-ghost:active {
+    background: var(--surface-3);
+    color: var(--text-main);
+    border-color: transparent;
+}
+
+.btn-raised {
+    background: var(--surface-2);
+    color: var(--text-main);
+    border-color: var(--border-main);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-raised:hover {
+    background: var(--surface-3);
+    border-color: var(--border-main);
+    color: var(--text-main);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-raised:active {
+    background: var(--surface-1);
+    border-color: var(--accent-pressed);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-gradient {
+    background:
+        linear-gradient(180deg, var(--accent-hover) 0%, var(--accent-main) 55%, var(--accent-pressed) 100%);
+    color: var(--btn-primary-text);
+    border-color: var(--accent-main);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-gradient:hover {
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--color-brand-600) 28%, var(--color-neutral-600) 72%) 0%,
+            color-mix(in srgb, var(--color-brand-500) 14%, var(--color-neutral-600) 86%) 45%,
+            color-mix(in srgb, var(--color-brand-300) 10%, var(--color-neutral-400) 90%) 100%
+        );
+    color: var(--btn-primary-text);
+    border-color: color-mix(in srgb, var(--accent-hover) 45%, var(--color-neutral-500) 55%);
+}
+
+.btn-gradient:active {
+    background:
+        linear-gradient(180deg, var(--accent-main) 0%, var(--accent-pressed) 100%);
+    color: var(--btn-primary-text);
+    border-color: var(--accent-pressed);
+    box-shadow: var(--shadow-sm);
+}

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Taxation No Rep Style Guide</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+
+<body>
+  <div class="content">
+    <section class="page-header">
+      <div class="badge"><img src="../assets/images/badge.png" alt="Logo"></div>
+      <div class="logo"><img src="../assets/images/logo.png" alt="Logo"></div>
+      <h1>TNR Style Guide</h1>
+      <p>System preview for shared UI patterns.</p>
+    </section>
+
+    <section class="card">
+      <h2>Typography</h2>
+      <h1>Heading 1</h1>
+      <h2>Heading 2</h2>
+      <h3>Heading 3</h3>
+      <p>Default body text for the app interface.</p>
+      <p class="td">Table cell text 300 thin example</p>
+      <p><strong>Strong text</strong> and <a href="#">default link</a>.</p>
+    </section>
+
+    <section class="card">
+      <h2>Buttons and Pills</h2>
+
+      <p>
+        <a href="#" class="btn-primary">Primary</a>
+        <a href="#" class="btn-secondary">Secondary</a>
+        <a href="#" class="btn-outline">Outline</a>
+        <a href="#" class="btn-ghost">Ghost</a>
+        <a href="#" class="btn-raised">Raised</a>
+        <a href="#" class="btn-gradient">Gradient</a>
+      </p>
+
+      <p>
+        <button type="button" class="btn-primary">Primary Button</button>
+        <button type="button" class="btn-secondary">Secondary Button</button>
+        <button type="button" class="btn-outline">Outline Button</button>
+        <button type="button" class="btn-ghost">Ghost Button</button>
+        <button type="button" class="btn-raised">Raised Button</button>
+        <button type="button" class="btn-gradient">Gradient Button</button>
+      </p>
+
+      <p>
+        <button type="button" class="btn-primary" disabled>Primary Disabled</button>
+        <button type="button" class="btn-secondary" disabled>Secondary Disabled</button>
+        <button type="button" class="btn-outline" disabled>Outline Disabled</button>
+        <button type="button" class="btn-ghost" disabled>Ghost Disabled</button>
+        <button type="button" class="btn-raised" disabled>Raised Disabled</button>
+        <button type="button" class="btn-gradient" disabled>Gradient Disabled</button>
+      </p>
+
+      <p>
+        <a href="#" class="pill">Pill Link</a>
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Alerts</h2>
+
+      <div class="alert alert-error">
+        Error alert example
+      </div>
+
+      <div class="alert alert-note">
+        Note alert example
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Form Controls</h2>
+      <form class="upload-form">
+        <div class="form-row">
+          <label for="demo-select">Select</label>
+          <select id="demo-select" name="demo-select">
+            <option>Option One</option>
+            <option>Option Two</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="demo-file">File Input</label>
+          <input id="demo-file" type="file" name="demo-file">
+        </div>
+
+        <div class="form-actions">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Summary Links</h2>
+      <div class="summary-links">
+        <a href="#">Review Uncategorized</a>
+        <a href="#">Annual P&amp;L</a>
+        <a href="#">Monthly P&amp;L</a>
+        <a href="#">Flags</a>
+      </div>
+      <div class="">
+        <a href="/uncategorized?token={{ token }}" class="button-secondary">Review Uncategorized</a>
+        <a href="/pl/monthly?token={{ token }}" class="button-secondary">View Monthly P&amp;L</a>
+        <a href="/pl/annual?token={{ token }}" class="button-secondary">View Annual P&amp;L</a>
+        <a href="/flags?token={{ token }}" class="button-secondary">Review Flags</a>
+        <a href="/non-pl?token={{ token }}" class="button-secondary">Non-P&amp;L</a>
+        <a href="/categories?token={{ token }}" class="button-secondary">Review All Categories</a>
+        <a href="/results?token={{ token }}" class="button-secondary">Everything At A Glance</a>
+        <a href="/export.xlsx?token={{ token }}" class="button-primary">Export Excel</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Table</h2>
+      <table>
+        <tr>
+          <th>Column One</th>
+          <th>Column Two</th>
+          <th>Column Three</th>
+        </tr>
+        <tr>
+          <td>Row 1</td>
+          <td>Example</td>
+          <td>123.45</td>
+        </tr>
+        <tr>
+          <td>Row 2</td>
+          <td>Example</td>
+          <td>678.90</td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>P&amp;L Table State</h2>
+      <table class="data-table pl-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sales</td>
+            <td>125,000.00</td>
+          </tr>
+          <tr class="pl-row-total">
+            <td>Total Revenue</td>
+            <td>125,000.00</td>
+          </tr>
+          <tr>
+            <td>Materials</td>
+            <td>26,409.66</td>
+          </tr>
+          <tr class="pl-row-final">
+            <td>Gross Profit</td>
+            <td>98,590.34</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+
+</html>
