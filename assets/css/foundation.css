@@ -86,8 +86,24 @@ tr:nth-of-type(even) {
     background-color: var(--surface-2);
 }
 
+ul {
+    list-style: none;
+    padding-inline-start: 10px;
+}
+
+
+ul li {
+    border-left: 2px solid var(--border-soft);
+    padding-left: var(--space-6);
+}
+
+ul li:hover {
+    border-left: 2px solid var(--accent-main);
+    cursor: pointer;
+}
+
 li {
-    margin-bottom: var(--space-2);
+    line-height: var(--space-8);
 }
 
 /* General UI */
@@ -97,6 +113,7 @@ li {
     border: 1px solid var(--card-border);
     border-radius: var(--radius-sm);
     padding: var(--space-5);
+    margin-bottom: var(--space-8);
 }
 
 /* Upload Index Display */
@@ -171,7 +188,7 @@ li {
 }
 
 .alert-note {
-    border: 1px solid var(--border-main);
+    border: 1px solid var(--accent-main);
 }
 
 .summary-kpis {

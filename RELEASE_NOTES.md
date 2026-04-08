@@ -28,16 +28,10 @@ if token not in SESSIONS:
 
 to return to main landing page = load select workspace page (with last working file as first card) or upload new 
 
-
-
-## v3.3.0 - Display: Tables: Duplicate Warning 
+## v later Duplicate Warning 
 dedupe or separate import notes display.
 
-
-
-
-
-## v3.4.0 - Display: Year Select 
+## v later  Year Select 
 in Summary if multiple years deteched ask which year to use and/or time frame in case fiscal year is not calendar year or the user need a snapshot for the quarter or custom time frame. 
 Expose Year Select in the upload flow if multi year is uploaded 
 foundation for full account upload with expense and income and multiple years 
@@ -51,18 +45,16 @@ Next after this, the right cleanup is fixed P&L line ordering so expenses displa
 “rows with zero totals” you mean a real fixed statement like:
 a full canonical zero-filled P&L layout
 
-
-
 ============================== Up Next ===============================
-
-
-
 
 ## v3.5.1 Display: Tables: Sorting 
 Flags, Non-P&L <th> Sort 
 
 ============================== Working ===============================
+
 =============================== Commited =============================
+## v3.6.0 Display: ul style
+
 ## v3.5.0 Display: Tables: Collapse Table 
 Show Icon to Open table display 
 Icon & Table Name only when closed 
