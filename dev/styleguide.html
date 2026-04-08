@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../assets/css/app.css">
 </head>
 
-<body>
+<body class="body-scroll">
   <div class="content">
     <section class="page-header">
       <div class="badge"><img src="../assets/images/badge.png" alt="Logo"></div>
@@ -99,21 +99,27 @@
     <section class="card">
       <h2>Summary Links</h2>
       <div class="summary-links">
-        <a href="#">Review Uncategorized</a>
-        <a href="#">Annual P&amp;L</a>
-        <a href="#">Monthly P&amp;L</a>
-        <a href="#">Flags</a>
+        <a class="btn-outline" href="#">Review Uncategorized</a>
+        <a class="btn-outline" href="#">Annual P&amp;L</a>
+        <a class="btn-outline" href="#">Monthly P&amp;L</a>
+        <a class="btn-outline" href="#">Flags</a>
       </div>
+      <h2>Inline Text Links</h2>
       <div class="">
-        <a href="/uncategorized?token={{ token }}" class="button-secondary">Review Uncategorized</a>
-        <a href="/pl/monthly?token={{ token }}" class="button-secondary">View Monthly P&amp;L</a>
-        <a href="/pl/annual?token={{ token }}" class="button-secondary">View Annual P&amp;L</a>
-        <a href="/flags?token={{ token }}" class="button-secondary">Review Flags</a>
-        <a href="/non-pl?token={{ token }}" class="button-secondary">Non-P&amp;L</a>
-        <a href="/categories?token={{ token }}" class="button-secondary">Review All Categories</a>
-        <a href="/results?token={{ token }}" class="button-secondary">Everything At A Glance</a>
-        <a href="/export.xlsx?token={{ token }}" class="button-primary">Export Excel</a>
+        <p>This is a <a href="#" class="button-secondary">text link inline</a> with this sentence.</p>
+        <span><a href="#" class="button-secondary">Click Here: </a>to learn more.</span><br /><br />
       </div>
+      <h2>Button Links</h2>
+      <div class="button">
+        <a href="#" class="btn-primary">Flat Button Link</a>
+        <a href="#" class="btn-gradient">Gradient Button Link</a>
+        <a href="#" class="btn-secondary">App Outline Link</a>
+        <a href="#" class="btn-outline">Outline Button Link</a>
+        <a href="#" class="btn-ghost">Ghost Button Link</a>
+        <a href="#" class="btn-raised">Raised Button Link</a>
+
+      </div>
+
     </section>
 
     <section class="card">

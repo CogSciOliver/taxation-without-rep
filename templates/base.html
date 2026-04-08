@@ -1,6 +1,6 @@
 <!--
 # base.html WORK IN PROGRESS, author Danii Oliver
-# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
+# v3.7.0 Display: Landing & buttons and a.btn 04.07.2026 23:37
 -->
 
 <!doctype html>
@@ -19,7 +19,7 @@
     <aside class="sidebar">
       <h3 class="site-title">Taxation No Rep App</h3>
 
-      <a href="/" class="{{ 'active' if nav=='upload' else '' }}">Upload</a>
+      <a href="/upload" class="{{ 'active' if nav=='upload' else '' }}">Upload</a>
       <a href="/workspace/open" class="{{ 'active' if nav=='workspace_open' else '' }}">Open Working File</a>
 
       {% if token %}

@@ -53,6 +53,8 @@ Flags, Non-P&L <th> Sort
 ============================== Working ===============================
 
 =============================== Commited =============================
+## v3.7.0 Display: Landing add, buttons and a.btn
+
 ## v3.6.0 Display: ul style
 
 ## v3.5.0 Display: Tables: Collapse Table 

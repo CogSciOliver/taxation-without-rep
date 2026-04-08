@@ -1,5 +1,5 @@
 # app.py WORK IN PROGRESS, author Danii Oliver
-# v3.3.0 Display: Branding Update 04.06.2026 09:30 
+# v3.7.0 Display: Landing & buttons and a.btn 04.07.2026 23:37
 
 from __future__ import annotations
 
@@ -568,10 +568,34 @@ def _get_uncategorized_count(df: pd.DataFrame) -> int:
     )
 
 
+# @app.get("/", response_class=HTMLResponse)
+# def index(request: Request):
+#     return templates.TemplateResponse(
+#         "index.html",
+#         {
+#             "request": request,
+#             "nav": "none",
+#             "title": "Welcome",
+#             "error": None,
+#         },
+#     )
+
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request):
+def landing(request: Request):
     return templates.TemplateResponse(
-        "index.html",
+        "landing.html",
+        {
+            "request": request,
+            "nav": "home",
+            "title": "Start",
+        },
+    )
+
+
+@app.get("/upload", response_class=HTMLResponse)
+def upload_page(request: Request):
+    return templates.TemplateResponse(
+        "upload.html",
         {
             "request": request,
             "sources": IRS_UPDATES_SOURCES,
@@ -580,7 +604,6 @@ def index(request: Request):
             "error": None,
         },
     )
-
 
 @app.post("/upload/start", response_class=HTMLResponse)
 async def upload_start(

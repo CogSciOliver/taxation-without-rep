@@ -1,0 +1,35 @@
+<!--
+# landing.html WORK IN PROGRESS, author Danii Oliver
+# v3.7.0 Display: Landing & buttons and a.btn 04.07.2026 23:37 
+-->
+
+{% extends "base.html" %}
+{% block content %}
+
+<section class="app-landing">
+  
+  <div class="app-landing-hero card">
+    <div class="app-landing-mark">
+      <img src="/assets/images/logo.png" alt="Taxation Without Representation logo">
+    </div>
+    <div class="app-landing-copy">
+      <p class="app-eyebrow">
+        business tax prep workbench for financial statement review & tax compliance
+        </p>
+      <h1>Taxation Without Representation</h1>
+      <p class="app-landing-text">
+        Upload bank, revenue, or expense CSVs and turn them into a working file
+        for categorization, review, and reporting.
+      </p>
+
+      <div class="two-column-grid">
+        <a class="btn-primary" href="/upload">Get Started</a>
+        <a class="btn-secondary" href="/workspace/open">Pick Up Where Left Off</a>
+      </div>
+    </div>
+
+    
+  </div>
+</section>
+
+{% endblock %}

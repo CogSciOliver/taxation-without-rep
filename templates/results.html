@@ -1,6 +1,6 @@
 <!--
 # results.html WORK IN PROGRESS, author Danii Oliver
-# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
+# v3.7.0 Display: Landing & buttons and a.btn 04.07.2026 23:37 
 -->
 
 {% extends "base.html" %}
@@ -8,7 +8,7 @@
 {% block content %}
 <div class="content">
 
-  <div class="row">
+  <div class="summary-pills">
     <h1 style="margin:0;">Results</h1>
     <span class="pill">File: {{ filename }}</span>
     <span class="pill">Mode: {{ entity_mode }}</span>
@@ -17,26 +17,26 @@
 
   <div class="summary-links">
     <h2 style="margin:5px;">Actions:</h2>
-    <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
-    <a href="/">Upload Another CSV</a>
-    <a href="/export.xlsx?token={{ token }}">Download Excel export</a>
+    <a class="btn-gradient" href="/uncategorized?token={{ token }}">Review Uncategorized</a>
+    <a class="btn-primary" href="/workspace/import?token={{ token }}" class="{{ 'active' if nav=='workspace_import' else '' }}">Upload Another CSV</a>
+    <a class="btn-raised" href="/export.xlsx?token={{ token }}">Download Excel export</a>
   </div>
 
   {% call collapsible_table("P&L by Category (P&L items only)") %}
-    {{ pl_cat | safe }}
+  {{ pl_cat | safe }}
   {% endcall %}
 
   {% call collapsible_table("P&L by Month (P&L items only)") %}
-    {{ pl_month | safe }}
+  {{ pl_month | safe }}
   {% endcall %}
 
   {% call collapsible_table("Flags") %}
-    {{ flags | safe }}
+  {{ flags | safe }}
   {% endcall %}
 
   {% call collapsible_table("Non-P&L candidates (first 200)") %}
-    <p>Prototype guesses: transfers, card payments, owner equity moves, payroll/withholding, financing. Review carefully.</p>
-    {{ non_pl | safe }}
+  <p>Prototype guesses: transfers, card payments, owner equity moves, payroll/withholding, financing. Review carefully.</p>
+  {{ non_pl | safe }}
   {% endcall %}
 
   <h2>Draft tax form checklist</h2>

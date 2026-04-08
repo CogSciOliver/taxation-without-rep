@@ -1,13 +1,13 @@
 <!--
 # summary.html WORK IN PROGRESS, author Danii Oliver
-# v3.2.1 DISPLAY: Categories 04.04.2026 10:29 
+# v3.7.0 Display: Landing & buttons and a.btn 04.07.2026 23:37 
 -->
 
 {% extends "base.html" %}
 {% block content %}
 
 <section class="page-header">
-  <h1>Landing Summary v3.0.1</h1>
+  <h1>Summary v3.0.1</h1>
 </section>
 
 <section class="card summary-card">
@@ -38,15 +38,15 @@
   </ul>
 
   <h3 class="section-heading">Go to reports</h3>
-  <div class="summary-links">
-    <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
-    <a href="/pl/monthly?token={{ token }}">View Monthly P&amp;L</a>
-    <a href="/pl/annual?token={{ token }}">View Annual P&amp;L</a>
-    <a href="/flags?token={{ token }}">Review Flags</a>
-    <a href="/non-pl?token={{ token }}">Non-P&amp;L</a>
-    <a href="/categories?token={{ token }}">Review All Categories</a>
-    <a href="/results?token={{ token }}">Everything At A Glance</a>
-    <a href="/export.xlsx?token={{ token }}">Export Excel</a>
+  <div class="four-column-grid">
+    <a class="btn-ghost" href="/uncategorized?token={{ token }}">Review Uncategorized</a>
+    <a class="btn-ghost" href="/pl/annual?token={{ token }}">View Annual P&amp;L</a>
+    <a class="btn-ghost" href="/flags?token={{ token }}">Review Flags</a>
+    <a class="btn-ghost" href="/non-pl?token={{ token }}">Non-P&amp;L</a>
+    <a class="btn-ghost" href="/pl/monthly?token={{ token }}">View Monthly P&amp;L</a>
+    <a class="btn-ghost" href="/categories?token={{ token }}">Review All Categories</a>
+    <a class="btn-ghost" href="/results?token={{ token }}">Everything At A Glance</a>
+    <a class="btn-ghost" href="/export.xlsx?token={{ token }}">Download Export Excel</a>
   </div>
 </section>
 

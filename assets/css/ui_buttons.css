@@ -1,10 +1,7 @@
 .pill {
-    display: inline-block;
-    padding: var(--space-1) var(--space-3);
-    border-radius: 999px;
     border: 1px solid var(--border-main);
     background: var(--surface-3);
-    color: var(--text-main);
+    border-radius: var(--radius-xl);
 }
 
 button {
@@ -25,17 +22,15 @@ button:hover {
 .btn-outline,
 .btn-ghost,
 .btn-raised,
-.btn-gradient {
+.btn-gradient,
+.pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    min-height: 44px;
     padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-sm);
+    /* border-radius: var(--radius-sm); */
     border: 1px solid transparent;
-    font: inherit;
-    font-weight: 600;
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
@@ -150,11 +145,11 @@ a.btn-gradient {
 .btn-ghost {
     background: transparent;
     color: var(--text-main);
-    border-color: transparent;
+    border-color: var(--surface-3);
 }
 
 .btn-ghost:hover {
-    background: var(--surface-2);
+    background: var(--surface-3);
     color: var(--text-main);
     border-color: transparent;
 }
@@ -196,11 +191,11 @@ a.btn-gradient {
 .btn-gradient:hover {
     background:
         linear-gradient(180deg,
-            color-mix(in srgb, var(--color-brand-600) 28%, var(--color-neutral-600) 72%) 0%,
-            color-mix(in srgb, var(--color-brand-500) 14%, var(--color-neutral-600) 86%) 45%,
-            color-mix(in srgb, var(--color-brand-300) 10%, var(--color-neutral-400) 90%) 100%);
+            color-mix(in srgb, var(--color-zinc-800) 28%, var(--color-orange-700) 72%) 0%,
+            color-mix(in srgb, var(--color-zinc-800) 14%, var(--color-orange-600) 86%) 45%,
+            color-mix(in srgb, var(--color-zinc-900) 10%, var(--color-orange-500) 90%) 100%);
     color: var(--btn-primary-text);
-    border-color: color-mix(in srgb, var(--accent-hover) 45%, var(--color-neutral-500) 55%);
+    border-color: color-mix(in srgb, var(--accent-hover) 45%, var(--color-zinc-500) 55%);
 }
 
 .btn-gradient:active {

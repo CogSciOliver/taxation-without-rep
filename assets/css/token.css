@@ -64,9 +64,9 @@
   --color-chart-6: #5b6068;
 
   /* ===== Shadow ===== */
-  --shadow-sm: 0 1px 2px rgba(10, 14, 22, 0.24);
-  --shadow-md: 0 8px 24px rgba(10, 14, 22, 0.28);
-  --shadow-lg: 0 16px 40px rgba(10, 14, 22, 0.36);
+  --shadow-sm: 0 1px 2px rgba(7, 11, 19, 0.4);
+  --shadow-md: 0 8px 24px rgba(7, 11, 19, 0.8);
+  --shadow-lg: 0 16px 40px rgba(7, 11, 19, 0.6);
 
   /* ===== Radius ===== */
   --radius-sm: 10px;

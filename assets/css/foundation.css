@@ -13,8 +13,11 @@ body {
     background-size: 100vw 100vh;
     background-attachment: fixed;
     line-height: var(--line-normal);
-
     overflow: hidden;
+}
+
+.body-scroll {
+    overflow: auto;
 }
 
 
@@ -179,8 +182,14 @@ li {
 
 
 /* Summary Display */
-.summary-card {
-    /* max-width: 860px; */
+.summary-links, .summary-pills {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.summary-kpis {
+    padding-left: var(--space-5);
 }
 
 .summary-year {
@@ -191,32 +200,11 @@ li {
     border: 1px solid var(--accent-main);
 }
 
-.summary-kpis {
-    padding-left: var(--space-5);
-}
-
 .section-heading {
     margin-top: var(--space-4);
 }
 
-.summary-links {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-}
 
-.summary-links a {
-    display: inline-block;
-    padding: var(--space-3) var(--space-3);
-    border: 1px solid var(--border-main);
-    border-radius: var(--radius-sm);
-    background: var(--surface-1);
-    text-decoration: none;
-}
-
-.summary-links a:hover {
-    background: var(--surface-2);
-}
 
 /* Year Select Display */
 .year-select-page {
