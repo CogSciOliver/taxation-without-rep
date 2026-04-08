@@ -56,29 +56,25 @@ a full canonical zero-filled P&L layout
 ============================== Up Next ===============================
 
 
-## v3.5.0 - Display: Tables: Collapse Table 
-Show Icon to Open table display 
-Table Name 
-TH 
-3 rows ...
-when closed 
 
-Show Icon to Close table display 
-Table Name 
-TH 
-ALL rows
-when open 
 
-## v3.5.1 - Display: Tables: Sorting 
+## v3.5.1 Display: Tables: Sorting 
 Flags, Non-P&L <th> Sort 
 
 ============================== Working ===============================
-
-## v3.4.0 - Display: Sidebar Fixed 
-Sidebar should be fixed and scroll separately only if needed 
-
-
 =============================== Commited =============================
+## v3.5.0 Display: Tables: Collapse Table 
+Show Icon to Open table display 
+Icon & Table Name only when closed 
+
+Show Icon to Close table display 
+Icon & Table Name & Rows when open 
+
+
+## v3.4.1 Display: Topbar Added with Component CSS files
+
+## v3.4.0 Display: Sidebar Fixed 
+Sidebar should be fixed and scroll separately only if needed 
 
 ## v3.3.1 Display: Branding Update
 ## v3.3.0 Display: Branding Update

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_table_tools.html" import collapsible_table %}
+{% block content %}
+
+<section class="page-header">
+  <h1>Categories</h1>
+  {% if selected_year %}
+  <p><strong>Working year:</strong> {{ selected_year }}</p>
+  {% endif %}
+</section>
+
+<p>
+  <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
+</p>
+
+{% call collapsible_table("Categories") %}
+  <table>
+    <tr>
+      <th>Type</th>
+      <th>Category</th>
+      <th>Total</th>
+    </tr>
+
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.type }}</td>
+      <td>
+        <a href="/bulk-edit?token={{ token }}&category={{ r.category }}">{{ r.category }}</a>
+      </td>
+      <td>{{ "%.2f"|format(r.total) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endcall %}
+
+{% endblock %}

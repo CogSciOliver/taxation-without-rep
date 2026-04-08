@@ -1,6 +1,6 @@
 <!--
 # base.html WORK IN PROGRESS, author Danii Oliver
-# v3.2.1 DISPLAY: Categories 04.04.2026 10:29 
+# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
 -->
 
 <!doctype html>
@@ -15,6 +15,7 @@
 
 <body>
   <div class="layout">
+
     <aside class="sidebar">
       <h3 class="site-title">Taxation No Rep App</h3>
 
@@ -37,28 +38,34 @@
       {% endif %}
     </aside>
 
-    <main class="content">
-      {% if token %}
-      {% if workspace_name %}
-      <div class="session-file-status saved">
-        Current Saved Working File: <strong>{{ workspace_name }}</strong>
+    <aside class="session-status">
+      <div class="working-namespace">
+        {% if token %}
+        {% if workspace_name %}
+        <div class="session-file-status saved">
+          Current Saved Working File: <strong>{{ workspace_name }}</strong>
+        </div>
+        {% else %}
+        <div class="session-file-status unsaved">
+          <strong>&#9888;&nbsp;&nbsp;Unsaved New Upload File:</strong> {{ filename }}
+          <!-- V.2.0.0 Workspace Save Form -->
+          <form method="post" action="/workspace/save" class="session-save-form">
+            <input type="hidden" name="token" value="{{ token }}">
+            <input type="text" name="workspace_name" placeholder="Working file name" required>
+            <button type="submit" class="btn-raised">&#128190;&nbsp;&nbsp;Save Working File</button>
+          </form>
+          <!-- V.2.0.0 END Workspace Save Form -->
+        </div>
+        {% endif %}
+        {% endif %}
       </div>
-      {% else %}
-      <div class="session-file-status unsaved">
-        <strong>Unsaved New Upload File:</strong> {{ filename }}
-        <!-- V.2.0.0 Workspace Save Form -->
-        <form method="post" action="/workspace/save" class="session-save-form">
-          <input type="hidden" name="token" value="{{ token }}">
-          <input type="text" name="workspace_name" placeholder="Working file name" required>
-          <button type="submit">Save Working File</button>
-        </form>
-        <!-- V.2.0.0 END Workspace Save Form -->
-      </div>
-      {% endif %}
-      {% endif %}
 
+    </aside>
+
+    <main class="content">
       {% block content %}{% endblock %}
     </main>
+
   </div>
 </body>
 

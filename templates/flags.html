@@ -1,7 +1,27 @@
+<!--
+# flags.html WORK IN PROGRESS, author Danii Oliver
+# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
+-->
+
 {% extends "base.html" %}
+{% from "_table_tools.html" import collapsible_table %}
 {% block content %}
 <h1>Flags</h1>
 <a class="button-primary" href="/uncategorized?token={{ token }}">Review Uncategorized</a>
+<h2>col 1 | col 2 | col 3</h2>
+<h3>confidence <= 0.50 | confidence <= 0.75 | confidence = 1.00</h3>
+<p>Scale: transactions organized to achiecve confidence level = 1.00</p>
+<p> 0% | 10% | 25% | 50 % | 75% | 100% </p>
+<p>Total % deduction confidence achieved</p>
+<img src="/assets/img/flags.png" alt="Flags Diagram" style="max-width: 100%; margin: 1em 0;" />
+<p>
+    This table shows transactions you've flagged as potentially needing review for tax reporting purposes. These flags are meant to help you identify transactions that may require special attention when preparing your tax return, such as those that could be classified as cost of goods sold, deductible expenses, or other categories relevant to your specific tax situation.
+</p>
+<p>
+    Review these flagged transactions carefully to ensure accurate categorization and reporting on your tax return.
+</p>
 
+{% call collapsible_table("Flags") %}
 {{ flags | safe }}
+{% endcall %}
 {% endblock %}

@@ -1,0 +1,23 @@
+<!--
+# _table_tools.html WORK IN PROGRESS, author Danii Oliver
+# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
+-->
+
+{% macro collapsible_table(title, preview_rows=3, open=false, extra_class="") %}
+<details class="table-collapse {{ extra_class }}"{% if open %} open{% endif %}>
+  <summary class="table-collapse-summary">
+    <span class="table-collapse-icon" aria-hidden="true"></span>
+    <span class="table-collapse-title">{{ title }}</span>
+    <span class="table-collapse-state table-collapse-state-closed">
+      view all rows
+    </span>
+    <span class="table-collapse-state table-collapse-state-open">
+      collapse table
+    </span>
+  </summary>
+
+  <div class="table-collapse-body">
+    {{ caller() }}
+  </div>
+</details>
+{% endmacro %}

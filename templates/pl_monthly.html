@@ -1,5 +1,14 @@
+<!--
+# pl_monthly.html WORK IN PROGRESS, author Danii Oliver
+# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
+-->
+
 {% extends "base.html" %}
+{% from "_table_tools.html" import collapsible_table %}
 {% block content %}
   <h1>P&L (Monthly)</h1>
-  {{ pl_month | safe }}
+
+  {% call collapsible_table("P&L by Month", open=true) %}
+    {{ pl_month | safe }}
+  {% endcall %}
 {% endblock %}

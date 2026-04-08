@@ -1,4 +1,10 @@
+<!--
+# results.html WORK IN PROGRESS, author Danii Oliver
+# v3.5.0 Display: Tables: Collapse Table  04.07.2026 20:03 
+-->
+
 {% extends "base.html" %}
+{% from "_table_tools.html" import collapsible_table %}
 {% block content %}
 <div class="content">
 
@@ -8,6 +14,7 @@
     <span class="pill">Mode: {{ entity_mode }}</span>
   </div>
   <hr>
+
   <div class="summary-links">
     <h2 style="margin:5px;">Actions:</h2>
     <a href="/uncategorized?token={{ token }}">Review Uncategorized</a>
@@ -15,18 +22,22 @@
     <a href="/export.xlsx?token={{ token }}">Download Excel export</a>
   </div>
 
-  <h2>P&L by Category (P&L items only)</h2>
-  {{ pl_cat | safe }}
+  {% call collapsible_table("P&L by Category (P&L items only)") %}
+    {{ pl_cat | safe }}
+  {% endcall %}
 
-  <h2>P&L by Month (P&L items only)</h2>
-  {{ pl_month | safe }}
+  {% call collapsible_table("P&L by Month (P&L items only)") %}
+    {{ pl_month | safe }}
+  {% endcall %}
 
-  <h2>Flags</h2>
-  {{ flags | safe }}
+  {% call collapsible_table("Flags") %}
+    {{ flags | safe }}
+  {% endcall %}
 
-  <h2>Non-P&L candidates (first 200)</h2>
-  <p>Prototype guesses: transfers, card payments, owner equity moves, payroll/withholding, financing. Review carefully.</p>
-  {{ non_pl | safe }}
+  {% call collapsible_table("Non-P&L candidates (first 200)") %}
+    <p>Prototype guesses: transfers, card payments, owner equity moves, payroll/withholding, financing. Review carefully.</p>
+    {{ non_pl | safe }}
+  {% endcall %}
 
   <h2>Draft tax form checklist</h2>
   <ul>
@@ -46,5 +57,4 @@
     {% endfor %}
   </ul>
 </div>
-
 {% endblock %}
