@@ -1,43 +1,53 @@
 :root {
   /* ===== Brand / Accent ===== */
-  --color-brand-900: #8f241d;
-  --color-brand-800: #a92d23;
-  --color-brand-700: #c63a2c;
-  --color-brand-600: #e85a36;
-  --color-brand-500: #f26c3a;
-  --color-brand-400: #ff8b4a;
-  --color-brand-300: #ffab78;
+  --color-orange-50: rgb(255, 247, 237);
+  --color-orange-100: rgb(255, 237, 212);
+  --color-orange-200: rgb(255, 219, 184);
+  --color-orange-300: rgb(255, 171, 120);
+  --color-orange-400: rgb(255, 139, 74);
+  --color-orange-500: rgb(242, 108, 58);
+  --color-orange-600: rgb(232, 90, 54);
+  --color-orange-700: rgb(198, 58, 44);
+  --color-orange-800: rgb(172, 45, 36);
+  --color-orange-900: rgb(143, 36, 29);
+  --color-orange-950: rgb(107, 27, 21);
 
-  /* ===== Backgrounds ===== */
-  --color-bg-app: #14181f;
-  --color-bg-subtle: #171c23;
-  --color-bg-elevated: #1b2028;
-  --color-bg-card: #232831;
-  --color-bg-card-2: #2d333d;
-  --color-bg-inset: #10141a;
-  --color-bg-overlay: rgba(8, 10, 14, 0.72);
-
-  /* ===== Borders ===== */
-  --color-border-subtle: #2a3038;
-  --color-border-default: #343a45;
-  --color-border-strong: #444b57;
-
-  /* ===== Text ===== */
-  --color-text-primary: #e8ecf1;
-  --color-text-secondary: #a3aab4;
-  --color-text-muted: #7b828d;
-  --color-text-inverse: #0f1318;
+  --color-brand-primary: var(--color-orange-600);
 
   /* ===== Neutral Scale ===== */
-  --color-neutral-100: #f3f4f6;
-  --color-neutral-200: #d9d7d2;
-  --color-neutral-300: #a9a8a5;
-  --color-neutral-400: #7f848b;
-  --color-neutral-500: #5b6068;
-  --color-neutral-600: #3f454f;
-  --color-neutral-700: #2d333d;
-  --color-neutral-800: #232831;
-  --color-neutral-900: #14181f;
+  --color-zinc-50: rgb(250, 250, 250);
+  --color-zinc-100: rgb(243, 244, 246);
+  --color-zinc-200: rgb(229, 231, 235);
+  --color-zinc-300: rgb(203, 207, 214);
+  --color-zinc-400: rgb(168, 174, 185);
+  --color-zinc-500: rgb(136, 143, 155);
+  --color-zinc-600: rgb(107, 114, 126);
+  --color-zinc-700: rgb(82, 89, 102);
+  --color-zinc-800: rgb(58, 65, 79);
+  --color-zinc-900: rgb(33, 40, 54);
+  --color-zinc-950: rgb(24, 29, 39);
+  --color-zinc-subtle: rgb(16, 24, 34);
+  --color-zinc-dark: rgb(10, 14, 22);
+
+  /* ===== Backgrounds ===== */
+  --color-bg-app: var(--color-zinc-dark);
+  --color-bg-subtle: var(--color-zinc-950);
+  --color-bg-elevated: var(--color-zinc-subtle);
+  --color-bg-card: var(--color-zinc-950);
+  --color-bg-card-2: var(--color-zinc-900);
+  --color-bg-inset: var(--color-zinc-subtle);
+  --color-bg-overlay: rgba(10, 14, 22, 0.72);
+
+  /* ===== Borders ===== */
+  --color-border-subtle: var(--color-zinc-900);
+  --color-border-default: var(--color-zinc-800);
+  --color-border-strong: var(--color-zinc-700);
+
+  /* ===== Text ===== */
+  --color-text-primary: var(--color-zinc-200);
+  --color-text-secondary: var(--color-zinc-400);
+  --color-text-muted: var(--color-zinc-500);
+  --color-text-inverse: var(--color-zinc-900);
 
   /* ===== States ===== */
   --color-success: #4fbf8f;
@@ -54,9 +64,9 @@
   --color-chart-6: #5b6068;
 
   /* ===== Shadow ===== */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.36);
+  --shadow-sm: 0 1px 2px rgba(10, 14, 22, 0.24);
+  --shadow-md: 0 8px 24px rgba(10, 14, 22, 0.28);
+  --shadow-lg: 0 16px 40px rgba(10, 14, 22, 0.36);
 
   /* ===== Radius ===== */
   --radius-sm: 10px;
@@ -92,7 +102,7 @@
 
   /* ===== Component Tokens ===== */
   --app-bg: var(--color-bg-app);
-  --surface-1: var(--color-bg-elevated);
+  --surface-1: var(--color-bg-app);
   --surface-2: var(--color-bg-card);
   --surface-3: var(--color-bg-card-2);
 
@@ -103,9 +113,9 @@
   --border-main: var(--color-border-default);
   --border-soft: var(--color-border-subtle);
 
-  --accent-main: var(--color-brand-500);
-  --accent-hover: var(--color-brand-400);
-  --accent-pressed: var(--color-brand-700);
+  --accent-main: var(--color-orange-600);
+  --accent-hover: var(--color-orange-400);
+  --accent-pressed: var(--color-orange-700);
 
   --btn-primary-bg: var(--accent-main);
   --btn-primary-text: #ffffff;
@@ -124,8 +134,13 @@
   /* ===== Gradient Tokens ===== */
 
   --app-bg-gradient:
-    radial-gradient(circle at top right, rgba(242, 108, 58, 0.10), transparent 28%),
+    radial-gradient(circle at top right, rgba(242, 108, 58, 0.10), transparent 40%),
     linear-gradient(180deg, var(--color-bg-app) 0%, var(--color-bg-elevated) 100%);
+
+  --status-bg:
+    radial-gradient(circle at top right, rgba(232, 90, 54, 0.60), transparent 90%),
+    linear-gradient(160deg, var(--accent-hover) 0%, var(--accent-pressed) 70%);
+
 
   --sidebar-bg:
     linear-gradient(180deg, rgba(242, 108, 58, 0.08) 0%, rgba(242, 108, 58, 0) 140px),
@@ -133,8 +148,8 @@
 
   --sidebar-active-bg: rgba(242, 108, 58, 0.14);
 
-  --table-row-odd: rgba(255, 255, 255, 0.01);
-  --table-row-even: rgba(255, 255, 255, 0.03);
+  --table-row-odd: var(--surface-1);
+  --table-row-even: var(--surface-2);
 
   --alert-error-bg: rgba(232, 90, 54, 0.14);
   --alert-error-text: var(--color-text-primary);

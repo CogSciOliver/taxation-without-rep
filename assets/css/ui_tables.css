@@ -1,0 +1,98 @@
+.td {
+    /* This class is for testing table cell text styling in the style guide. It is not used in the app. */
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: var(--text-main);
+}
+
+.pl-row-total td {
+    font-weight: 700;
+    border-top: 2px solid var(--accent-main);
+}
+
+.pl-row-final td {
+    font-weight: 900;
+    border-top: 5px double var(--accent-hover);
+    border-bottom: 5px double var(--border-main);
+    background: var(--surface-2);
+}
+
+/* Collapsible report tables */
+.table-collapse {
+    margin: var(--space-4) 0 var(--space-8);
+    border: 1px solid var(--border-main);
+    border-radius: var(--radius-sm);
+    
+    overflow: hidden;
+}
+
+.table-collapse-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    cursor: pointer;
+    background: var(--surface-3);
+    user-select: none;
+    list-style: none;
+}
+
+.table-collapse-summary::-webkit-details-marker {
+    display: none;
+}
+
+.table-collapse-icon {
+    width: 16px;
+    flex: 0 0 16px;
+    color: var(--accent-main);
+    font-size: var(--text-md);
+    line-height: 1;
+}
+
+.table-collapse-icon::before {
+    content: "▸";
+}
+
+.table-collapse[open] .table-collapse-icon::before {
+    content: "▾";
+}
+
+.table-collapse-title {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.table-collapse-state {
+    margin-left: auto;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+.table-collapse-state-open {
+    display: none;
+}
+
+.table-collapse[open] .table-collapse-state-open {
+    display: inline;
+}
+
+.table-collapse[open] .table-collapse-state-closed {
+    display: none;
+}
+
+.table-collapse[open] .table-collapse-summary {
+    border-bottom: 1px solid var(--border-main);
+}
+
+.table-collapse-body {
+    padding: 0 var(--space-4) var(--space-4);
+}
+
+.table-collapse-body>table {
+    margin: 0;
+}
+
+.table-collapse:not([open]) tbody tr:nth-child(n + 4) {
+    display: none;
+}
